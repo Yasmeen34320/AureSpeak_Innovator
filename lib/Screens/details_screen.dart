@@ -3,27 +3,94 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:grd_projecttt/Screens/test_screen.dart';
 import 'package:grd_projecttt/Shared/card_camera.dart';
 import 'package:grd_projecttt/Shared/card_category.dart';
+import 'package:provider/provider.dart';
+import 'package:flutter_tts/flutter_tts.dart';
+
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:intl/intl.dart';
 
 class DetailsScreen extends StatefulWidget {
-  const DetailsScreen({super.key});
+  bool? def1;
+  DetailsScreen({super.key, required this.def1});
 
   @override
   State<DetailsScreen> createState() => _DetailsScreenState();
 }
 
+Map<String, Map<String, String>> localizedStrings = {
+  'en': {
+    'title': 'Color Recognition',
+    'title1': 'Money Recognition',
+    'option': 'Using Camera',
+    'option1': 'From Device',
+  },
+  'ar': {
+    'title': 'التعرف علي اللون',
+    'title1': 'التعرف علي المال',
+    'option': 'بإستخدام الكاميرا ',
+    'option1': 'من الجهاز',
+  },
+};
+AppLocalizations appLocalizations(BuildContext context) {
+  final locale =
+      Provider.of<ChangeLocaleProvider>(context, listen: false).locale;
+  final localeCode = locale.languageCode;
+  return AppLocalizations(localeCode);
+}
+
+class AppLocalizations {
+  final String _localeCode;
+
+  AppLocalizations(this._localeCode);
+
+  String get title => _getTranslation('title');
+  String get title1 => _getTranslation('title1');
+  String get option => _getTranslation('option');
+  String get option1 => _getTranslation('option1');
+  String _getTranslation(String key) {
+    final locale = Intl.canonicalizedLocale(_localeCode);
+    return localizedStrings[locale]?.containsKey(key) == true
+        ? localizedStrings[locale]![key]!
+        : 'Localization key not found: $key';
+  }
+}
+
+class ChangeLocaleProvider extends ChangeNotifier {
+  Locale _locale = Locale('en', 'US');
+
+  Locale get locale => _locale;
+
+  void setLocale(Locale newLocale) {
+    _locale = newLocale;
+    notifyListeners();
+  }
+}
+
 class _DetailsScreenState extends State<DetailsScreen> {
   @override
   Widget build(BuildContext context) {
+    final changeLocaleProvider = Provider.of<ChangeLocaleProvider>(context);
+    if (widget.def1!) {
+      changeLocaleProvider.setLocale(Locale('en', 'EN'));
+    } else {
+      changeLocaleProvider.setLocale(Locale('ar', 'AR'));
+    }
     var screenSize = MediaQuery.of(context).size; // Color(0xFFF7F5F5)
     var color = Colors
         .white; //Color.fromARGB(255, 160, 64,64); //Color(0xFF5164BF); //Color.fromARGB(255, 31, 122, 207);
-    List<String> datacolor = ["Color Recognition", "Money Recognition"];
+    List<String> datacolor = [
+      appLocalizations(context).title,
+      appLocalizations(context).title1
+    ];
     List<String> databreif = [
       "involves the capability to identify and process colors within images or through the device's camera.",
       "simply point your device's camera at banknotes, and it  will identify the currency denomination."
     ];
     List<String> dataimage = ["lib/assest/color1.jpg", "lib/assest/money1.jpg"];
-    List<dynamic> p = [Testscreen(), Testscreen()];
+    List<dynamic> p = [
+      Testscreen(def: widget.def1),
+      Testscreen(def: widget.def1)
+    ];
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -35,6 +102,21 @@ class _DetailsScreenState extends State<DetailsScreen> {
           ),
         ),
         backgroundColor: color,
+        actions: [
+          IconButton(
+              onPressed: () {
+                if (widget.def1!) {
+                  widget.def1 = false;
+                  changeLocaleProvider.setLocale(Locale('ar', 'AR'));
+                  //   setState(() {});
+                } else {
+                  widget.def1 = true;
+                  changeLocaleProvider.setLocale(Locale('en', 'EN'));
+                  // setState(() {});
+                }
+              },
+              icon: Icon(Icons.language))
+        ],
         leading: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Container(
@@ -72,7 +154,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => Testscreen()),
+                    MaterialPageRoute(
+                        builder: (context) => Testscreen(def: widget.def1)),
                   );
                 },
                 child: CardCamera(

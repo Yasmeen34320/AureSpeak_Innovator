@@ -8,6 +8,8 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:flutter_langdetect/flutter_langdetect.dart' as langdetect;
+import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 
 import 'dart:convert';
 import 'package:translator/translator.dart';
@@ -20,10 +22,10 @@ String data1 = "null";
 var dd = "nn";
 FlutterTts flutterTts = FlutterTts();
 String textToSpeak = "";
-Future<void> performOCR(File imageFile) async {
+Future<void> performOCR(File imageFile, String language) async {
   var request = http.MultipartRequest(
     'PUT', // 127.0.0.1 (windows) ,, 192.168.232.2
-    Uri.parse('http://127.0.0.1:5000/api/perform_ocr'),
+    Uri.parse('http://10.0.2.2:5000/api/perform_ocr/$language'),
   );
   request.files.add(http.MultipartFile(
     'image',
@@ -55,7 +57,8 @@ Future<void> performOCR(File imageFile) async {
 }
 
 class Testscreen extends StatefulWidget {
-  const Testscreen({super.key});
+  final bool? def;
+  const Testscreen({super.key, required this.def});
 
   @override
   State<Testscreen> createState() => _TestscreenState();
@@ -66,12 +69,33 @@ bool flag = false, flg1 = false;
 
 class _TestscreenState extends State<Testscreen> {
   @override
+  void initState() {
+    super.initState();
+    flutterTts = FlutterTts();
+    initializeTts();
+  }
+
+  Future<void> initializeTts() async {
+    await flutterTts.setLanguage('en-US');
+    await flutterTts.setSpeechRate(1.0);
+    await flutterTts.setPitch(1.0);
+  }
+
+  @override
   Widget build(BuildContext context) {
     var screenSize = MediaQuery.of(context).size;
+    final changeLocaleProvider = Provider.of<ChangeLocaleProvider>(context);
+
+    if (widget.def == true) {
+      changeLocaleProvider.setLocale(Locale('en', 'EN'));
+    } else {
+      changeLocaleProvider.setLocale(Locale('ar', 'AR'));
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Color Recognition',
+          appLocalizations(context).title,
           style: GoogleFonts.nunito(
             fontSize: 25,
             color: Color.fromRGBO(7, 7, 7, 1),
@@ -96,7 +120,10 @@ class _TestscreenState extends State<Testscreen> {
                 if (file == null)
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => DetailsScreen()),
+                    MaterialPageRoute(
+                        builder: (context) => DetailsScreen(
+                              def1: widget.def,
+                            )),
                   );
                 file = null;
                 flag = false;
@@ -121,7 +148,12 @@ class _TestscreenState extends State<Testscreen> {
           SizedBox(
             height: 18,
           ),
-          Text(((file == null)) ? "Upload Photo" : "",
+          Text(
+              ((file == null))
+                  ? (widget.def!)
+                      ? "Upload Photo"
+                      : "قم بتحميل صورة"
+                  : "",
               style: GoogleFonts.pangolin(
                   fontSize: 22, fontWeight: FontWeight.bold)),
           SizedBox(
@@ -170,7 +202,8 @@ class _TestscreenState extends State<Testscreen> {
                                   ),
                                   Flexible(
                                       child: Text(
-                                    "Using Camera",
+                                    //"Using Camera",
+                                    appLocalizations(context).option,
                                     style: GoogleFonts.nunito(
                                       fontSize: 19.0,
                                       color: Colors.black,
@@ -216,7 +249,8 @@ class _TestscreenState extends State<Testscreen> {
                                   ),
                                   Flexible(
                                       child: Text(
-                                    "From Device",
+                                    //  "From Device"
+                                    appLocalizations(context).option1,
                                     style: GoogleFonts.nunito(
                                       fontSize: 19.0,
                                       color: Colors.black,
@@ -257,7 +291,7 @@ class _TestscreenState extends State<Testscreen> {
                             height: 10,
                           ),
                           Text(
-                            "Your photo",
+                            (widget.def!) ? "Your photo" : "صورتك",
                             style: GoogleFonts.nunito(
                               fontSize: 19.0,
                               color: Colors.black,
@@ -275,7 +309,13 @@ class _TestscreenState extends State<Testscreen> {
                         // Handle button press
                         print('Button Pressed');
                         flag = true;
-                        await performOCR(file!);
+                        String language = '';
+                        if (widget.def!)
+                          language = 'en';
+                        else
+                          language = 'ar';
+
+                        await performOCR(file!, language);
                         setState(() {});
                       },
                       style: ElevatedButton.styleFrom(
@@ -285,7 +325,7 @@ class _TestscreenState extends State<Testscreen> {
                         backgroundColor: Color.fromARGB(255, 102, 87, 153),
                       ),
                       child: Text(
-                        'Predict',
+                        (widget.def!) ? 'Predict' : "تنبأ",
                         style: GoogleFonts.nunito(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -300,7 +340,7 @@ class _TestscreenState extends State<Testscreen> {
           ),
           (flag == true)
               ? Column(children: [
-                  Text("Option",
+                  Text((widget.def!) ? "Option" : 'قم بالإختيار',
                       style: GoogleFonts.pangolin(
                           fontSize: 22, fontWeight: FontWeight.bold)),
                   Row(
@@ -329,7 +369,7 @@ class _TestscreenState extends State<Testscreen> {
                             ),
                             SizedBox(width: 4.0),
                             Text(
-                              'Text',
+                              (widget.def!) ? 'Text' : 'نص',
                               style: GoogleFonts.nunito(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
@@ -356,7 +396,7 @@ class _TestscreenState extends State<Testscreen> {
                             ),
                             SizedBox(width: 6.0),
                             Text(
-                              'Speech',
+                              (widget.def!) ? 'Speech' : 'صوت',
                               style: GoogleFonts.nunito(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
@@ -387,8 +427,11 @@ Future<void> speakText() async {
   final translatedText = (await translator.translate(data, to: 'ar'));
   data1 = translatedText.text;
   final language = await langdetect.detect(data);
-  print(ss);
-  await flutterTts.setLanguage(language); // Set the language (change as needed)
+  print(language);
+  print(data);
+  await flutterTts.setLanguage((language == 'ar')
+      ? language
+      : ('en')); // Set the language (change as needed)
   await flutterTts
       .setSpeechRate(0.25); // Set the speech rate (adjust as needed)
   await flutterTts.setPitch(1.0); // Set the pitch (adjust as needed)

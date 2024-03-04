@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:grd_projecttt/Screens/color_screen.dart';
 import 'package:grd_projecttt/Screens/test_screen.dart';
 import 'package:grd_projecttt/Shared/card_camera.dart';
 import 'package:grd_projecttt/Shared/card_category.dart';
@@ -69,6 +71,7 @@ class ChangeLocaleProvider extends ChangeNotifier {
 class _DetailsScreenState extends State<DetailsScreen> {
   @override
   Widget build(BuildContext context) {
+    bool isHovering = false;
     final changeLocaleProvider = Provider.of<ChangeLocaleProvider>(context);
     if (widget.def1!) {
       changeLocaleProvider.setLocale(Locale('en', 'EN'));
@@ -87,10 +90,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
       "simply point your device's camera at banknotes, and it  will identify the currency denomination."
     ];
     List<String> dataimage = ["lib/assest/color1.jpg", "lib/assest/money1.jpg"];
-    List<dynamic> p = [
-      Testscreen(def: widget.def1),
-      Testscreen(def: widget.def1)
-    ];
+    List<dynamic> p = [ColorScreen(), Testscreen(def: widget.def1)];
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -155,14 +155,27 @@ class _DetailsScreenState extends State<DetailsScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => Testscreen(def: widget.def1)),
+                        // Testscreen(def: widget.def1)
+                        builder: (context) => p[i]),
                   );
                 },
-                child: CardCamera(
-                  Images: dataimage[i],
-                  TestName: datacolor[i],
-                  brief: databreif[i],
-                  path: p[i],
+                child: MouseRegion(
+                  onEnter: (PointerEnterEvent event) {
+                    setState(() {
+                      isHovering = true;
+                    });
+                  },
+                  onExit: (PointerExitEvent event) {
+                    setState(() {
+                      isHovering = false;
+                    });
+                  },
+                  child: CardCamera(
+                    Images: dataimage[i],
+                    TestName: datacolor[i],
+                    brief: databreif[i],
+                    path: p[i],
+                  ),
                 ),
               )
           ]))

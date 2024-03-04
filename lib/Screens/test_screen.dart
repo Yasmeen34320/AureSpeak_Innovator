@@ -22,10 +22,11 @@ String data1 = "null";
 var dd = "nn";
 FlutterTts flutterTts = FlutterTts();
 String textToSpeak = "";
+
 Future<void> performOCR(File imageFile, String language) async {
   var request = http.MultipartRequest(
-    'PUT', // 127.0.0.1 (windows) ,, 192.168.232.2
-    Uri.parse('http://10.0.2.2:5000/api/perform_ocr/$language'),
+    'PUT', // 127.0.0.1 (windows) ,, 192.168.1.7 , 10.0.2.2
+    Uri.parse('http://127.0.0.1:8000/api/perform_ocr/$language'),
   );
   request.files.add(http.MultipartFile(
     'image',
@@ -224,6 +225,7 @@ class _TestscreenState extends State<Testscreen> {
                                     .pickImage(source: ImageSource.gallery);
 
                                 file = File(xfile!.path);
+                                print(file);
                                 setState(() {});
                               },
                               child: Container(
@@ -315,6 +317,7 @@ class _TestscreenState extends State<Testscreen> {
                         else
                           language = 'ar';
 
+                        //   await performOCR(file!, language);
                         await performOCR(file!, language);
                         setState(() {});
                       },

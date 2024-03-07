@@ -5,7 +5,7 @@ class CardCamera extends StatefulWidget {
   final String? Images;
   final String? TestName;
   final String? brief;
-  final dynamic? path;
+  final dynamic path;
   const CardCamera(
       {Key? key, this.Images, this.TestName, this.brief, this.path})
       : super(key: key);

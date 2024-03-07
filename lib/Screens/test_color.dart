@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:grd_projecttt/Cubits/text_cubit/text_cubit.dart';
-import 'package:grd_projecttt/Cubits/text_cubit/text_state.dart';
+import 'package:grd_projecttt/Cubits/color_cubit/color_cubit.dart';
+import 'package:grd_projecttt/Cubits/color_cubit/color_state.dart';
 import 'package:grd_projecttt/Screens/details_screen.dart';
+import 'package:grd_projecttt/Screens/test_screen.dart';
 import 'package:grd_projecttt/Shared/initial_state.dart';
 import 'package:grd_projecttt/Shared/second_initial.dart';
-import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:flutter_langdetect/flutter_langdetect.dart' as langdetect;
-
-import 'package:translator/translator.dart';
 
 String data = "null";
 //final translator = GoogleTranslator();
@@ -19,31 +17,30 @@ String data = "null";
 FlutterTts flutterTts = FlutterTts();
 String textToSpeak = "";
 
-class Testscreen extends StatefulWidget {
+class TestColor extends StatefulWidget {
   final bool? lang;
-  const Testscreen({super.key, required this.lang});
+  const TestColor({super.key, required this.lang});
 
   @override
-  State<Testscreen> createState() => _TestscreenState();
+  State<TestColor> createState() => _TestColorState();
 }
 
-File? file = null;
 //bool flag = false, flg1 = false;
 
-class _TestscreenState extends State<Testscreen> {
-  late final TextCubit _textCubit;
+class _TestColorState extends State<TestColor> {
+  late final ColorsCubit _colorCubit;
 
   @override
   void initState() {
     super.initState();
-    _textCubit = TextCubit();
+    _colorCubit = ColorsCubit();
     flutterTts = FlutterTts();
     initializeTts();
   }
 
   @override
   void dispose() {
-    _textCubit.close();
+    _colorCubit.close();
     super.dispose();
   }
 
@@ -65,12 +62,12 @@ class _TestscreenState extends State<Testscreen> {
     // }
 
     return BlocProvider(
-      create: (context) => _textCubit,
-      child: BlocBuilder<TextCubit, TextState>(builder: (context, state) {
+      create: (context) => _colorCubit,
+      child: BlocBuilder<ColorsCubit, ColorsState>(builder: (context, state) {
         return Scaffold(
           appBar: AppBar(
             title: Text(
-              (widget.lang == true) ? "Text Extraction " : "استخراج النص  ",
+              (widget.lang!) ? "Color Recognition" : "التعرف علي اللون",
               // appLocalizations(context).title,
               style: GoogleFonts.nunito(
                 fontSize: 25,
@@ -107,8 +104,8 @@ class _TestscreenState extends State<Testscreen> {
                     print("herrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrre" + data);
                     await flutterTts.stop();
                     //    setState(() {});
-                    _textCubit.data = null;
-                    _textCubit.getInitial(1);
+                    _colorCubit.data = null;
+                    _colorCubit.getInitial(1);
                     print('Back button pressed');
                   },
                 ),
@@ -131,16 +128,16 @@ class _TestscreenState extends State<Testscreen> {
               SizedBox(
                 height: 20,
               ),
-              if (state is TextInitialState)
+              if (state is ColorsInitialState)
                 InitialState(
-                  func: () => _textCubit.getInitial(2),
+                  func: () => _colorCubit.getInitial(2),
                   language: widget.lang,
                 )
               else
                 SecondInitial(
                     file: file!,
                     language1: widget.lang,
-                    func: () => _textCubit.getText(file!, "en")),
+                    func: () => _colorCubit.getColors(file!, ('en'))),
               // }),
 
               SizedBox(
@@ -148,14 +145,14 @@ class _TestscreenState extends State<Testscreen> {
               ),
               // (flag == true)
               //   BlocBuilder<TextCubit, TextState>(builder: ((context, state) {
-              if (state is TextLoadingState)
+              if (state is ColorsLoadingState)
                 CircularProgressIndicator(
                   valueColor: AlwaysStoppedAnimation<Color>(
                       Color(0xFF6b5ba0)), // Change color here
                 )
-              else if (state is TextSuccessState || _textCubit.data != null)
+              else if (state is ColorsSuccessState || _colorCubit.data != null)
                 Column(children: [
-                  Text((widget.lang == true) ? "Option" : 'قم بالإختيار',
+                  Text((widget.lang!) ? "Option" : 'قم بالإختيار',
                       style: GoogleFonts.pangolin(
                           fontSize: 22, fontWeight: FontWeight.bold)),
                   Row(
@@ -167,10 +164,10 @@ class _TestscreenState extends State<Testscreen> {
                           print('Button Pressed');
                           //   flg1 = true;
                           //  setState(() {});
-                          if (state is TextSuccessState) {
+                          if (state is ColorsSuccessState) {
                             data = state.data;
                             print("ffffffffffffffff" + data);
-                            _textCubit.displayText(state.data);
+                            _colorCubit.displayColors(state.data);
                           }
                         },
                         style: ElevatedButton.styleFrom(
@@ -189,7 +186,7 @@ class _TestscreenState extends State<Testscreen> {
                             ),
                             SizedBox(width: 4.0),
                             Text(
-                              (widget.lang == true) ? 'Text' : 'نص',
+                              (widget.lang!) ? 'Text' : 'نص',
                               style: GoogleFonts.nunito(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
@@ -219,7 +216,7 @@ class _TestscreenState extends State<Testscreen> {
                             ),
                             SizedBox(width: 6.0),
                             Text(
-                              (widget.lang == true) ? 'Speech' : 'صوت',
+                              (widget.lang!) ? 'Speech' : 'صوت',
                               style: GoogleFonts.nunito(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
@@ -231,7 +228,7 @@ class _TestscreenState extends State<Testscreen> {
                     ],
                   ),
                 ])
-              else if (state is TextFailureState)
+              else if (state is ColorsFailureState)
                 // print("in the fail");
 
                 Text("Unable to Predict",
@@ -243,7 +240,7 @@ class _TestscreenState extends State<Testscreen> {
               // })),
 
               //  BlocBuilder<TextCubit, TextState>(builder: (context, state) {
-              if (state is TextDisplayState)
+              if (state is ColorsDisplayState)
                 // print("in the disp " + _textCubit.data!);
                 // print("in the disppp" + data);
                 Expanded(

@@ -131,7 +131,7 @@ class _ColorScreenState extends State<ColorScreen> {
                   context,
                   MaterialPageRoute(
                       builder: (context) => DetailsScreen(
-                            def1: true,
+                            lang1: true,
                           )),
                 );
                 print('Back button pressed');

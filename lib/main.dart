@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:grd_projecttt/Cubits/language_cubit/language_cubit.dart';
+import 'package:grd_projecttt/Cubits/text_cubit/text_cubit.dart';
 import 'package:grd_projecttt/Screens/details_screen.dart';
 import 'package:grd_projecttt/Screens/test_screen.dart';
 import 'package:grd_projecttt/Shared/card_category.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  Intl.defaultLocale = 'en';
+
   runApp(const MyApp());
 }
 
@@ -23,17 +26,12 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => ChangeLocaleProvider(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<TextCubit>(create: (context) => TextCubit()),
+        BlocProvider<LanguageCubit>(create: (context) => LanguageCubit()),
+      ],
       child: MaterialApp(
-        localizationsDelegates: [
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-        ],
-        supportedLocales: [
-          Locale('en', 'US'), // English
-          Locale('ar', 'AR'), // Arabic
-        ],
         debugShowCheckedModeBanner: false,
         title: 'Flutter Demo',
         theme: ThemeData(
@@ -62,7 +60,7 @@ class MyApp extends StatelessWidget {
             //     brief:
             //         "involves the capability to identify and process colors within images or through the device's camera."),
             //    Testscreen(),
-            DetailsScreen(def1: default1),
+            DetailsScreen(lang1: default1),
       ),
     );
   }

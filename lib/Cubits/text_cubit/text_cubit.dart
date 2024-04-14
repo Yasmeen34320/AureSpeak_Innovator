@@ -19,11 +19,12 @@ class TextCubit extends Cubit<TextState> {
   }
 
   void getText(File imageFile, String language) async {
+    print("wrongggggggggggggggggggggggggggggggg");
     emit(TextLoadingState());
     try {
       var request = http.MultipartRequest(
         'PUT', // 127.0.0.1 (windows) ,, 192.168.1.7 , 10.0.2.2
-        Uri.parse('http://10.0.2.2:8000/api/perform_ocr/$language'),
+        Uri.parse('http://192.168.1.7:8000/api/perform_ocr/$language'),
       );
       request.files.add(http.MultipartFile(
         'image',

@@ -243,10 +243,10 @@ class _TestColorState extends State<TestColor> {
               if (state is ColorsDisplayState)
                 // print("in the disp " + _textCubit.data!);
                 // print("in the disppp" + data);
-                Expanded(
-                    child: Text("prediction: " + state.data, //data,
-                        style: GoogleFonts.nunito(
-                            fontSize: 15, fontWeight: FontWeight.bold)))
+                // expandeddddddddddddddd
+                Text("prediction: " + state.data, //data,
+                    style: GoogleFonts.nunito(
+                        fontSize: 15, fontWeight: FontWeight.bold))
               else
                 //  print("kjkjkkjkjkjkj");
                 Container(),

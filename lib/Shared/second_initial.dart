@@ -33,13 +33,14 @@ class SecondInitial extends StatelessWidget {
               SizedBox(
                 height: 30,
               ),
-              Expanded(
-                child: Container(
-                    child: Image.file(
-                  file ?? File('temp_image.png'),
-                  fit: BoxFit.cover,
-                )),
-              ),
+              // expandedddddddddddddddddddddddd
+              Container(
+                  height: 100,
+                  width: 100,
+                  child: Image.file(
+                    file ?? File('temp_image.png'),
+                    fit: BoxFit.cover,
+                  )),
               SizedBox(
                 height: 10,
               ),

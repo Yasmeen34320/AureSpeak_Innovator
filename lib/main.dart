@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:grd_projecttt/Cubits/color_cubit/color_cubit.dart';
 import 'package:grd_projecttt/Cubits/language_cubit/language_cubit.dart';
+import 'package:grd_projecttt/Cubits/speech_cubit/speech_cubit.dart';
+import 'package:grd_projecttt/Cubits/speech_cubit/speech_state.dart';
 import 'package:grd_projecttt/Cubits/text_cubit/text_cubit.dart';
 import 'package:grd_projecttt/Screens/details_screen.dart';
 import 'package:grd_projecttt/Screens/test_screen.dart';
@@ -30,6 +33,9 @@ class MyApp extends StatelessWidget {
       providers: [
         BlocProvider<TextCubit>(create: (context) => TextCubit()),
         BlocProvider<LanguageCubit>(create: (context) => LanguageCubit()),
+        BlocProvider<ColorsCubit>(create: (context) => ColorsCubit()),
+        BlocProvider<SpeechRecognitionCubit>(
+            create: (context) => SpeechRecognitionCubit()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

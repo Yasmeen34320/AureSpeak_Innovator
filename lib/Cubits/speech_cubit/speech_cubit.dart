@@ -38,4 +38,7 @@ class SpeechRecognitionCubit extends Cubit<SpeechState> {
   }
 
   String get recognizedText => _recognizedText;
+  set recognizedText(String value) {
+    _recognizedText = value;
+  }
 }

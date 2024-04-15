@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:grd_projecttt/Cubits/color_cubit/color_cubit.dart';
-import 'package:grd_projecttt/Cubits/color_cubit/color_state.dart';
+import 'package:grd_projecttt/Cubits/image_cubit/image_cubit.dart';
+import 'package:grd_projecttt/Cubits/image_cubit/image_state.dart';
 import 'package:grd_projecttt/Cubits/speech_cubit/speech_cubit.dart';
 import 'package:grd_projecttt/Cubits/speech_cubit/speech_state.dart';
 import 'package:grd_projecttt/Screens/details_screen.dart';
@@ -21,26 +21,26 @@ String data = "null";
 FlutterTts flutterTts = FlutterTts();
 String textToSpeak = "";
 
-class TestColor extends StatefulWidget {
+class TestImage extends StatefulWidget {
   final bool? lang;
-  const TestColor({super.key, required this.lang});
+  const TestImage({super.key, required this.lang});
 
   @override
-  State<TestColor> createState() => _TestColorState();
+  State<TestImage> createState() => _TestColorState();
 }
 
 //bool flag = false, flg1 = false;
 var f = 0;
 
-class _TestColorState extends State<TestColor> {
-  late final ColorsCubit _colorCubit;
+class _TestColorState extends State<TestImage> {
+  late final ImageCubit _imageCubit;
   final stt.SpeechToText _speech = stt.SpeechToText();
   FlutterTts flutterTts = FlutterTts();
 
   @override
   void initState() {
     super.initState();
-    _colorCubit = ColorsCubit();
+    _imageCubit = ImageCubit();
     flutterTts = FlutterTts();
     _speech.initialize();
 
@@ -49,7 +49,7 @@ class _TestColorState extends State<TestColor> {
 
   @override
   void dispose() {
-    _colorCubit.close();
+    _imageCubit.close();
     super.dispose();
   }
 
@@ -80,16 +80,16 @@ class _TestColorState extends State<TestColor> {
     //   changeLocaleProvider.setLocale(Locale('ar', 'AR'));
     //}
     return BlocProvider(
-      create: (context) => _colorCubit,
-      child: BlocBuilder<ColorsCubit, ColorsState>(builder: (context, state) {
-        if (state is ColorsInitialState)
+      create: (context) => _imageCubit,
+      child: BlocBuilder<ImageCubit, ImageState>(builder: (context, state) {
+        if (state is ImageInitialState)
           f = 0;
         else
           f++;
 
-        if (state is ColorsFailureState)
+        if (state is ImageFailureState)
           _speak('unable to predict the photo please try again later ');
-        else if (state is ColorsSuccessState) {
+        else if (state is ImageSuccessState) {
           data = state.data;
           _speak(
               'successfully predict the photo please select an option 5 to the text or  6 for the speech ');
@@ -100,7 +100,7 @@ class _TestColorState extends State<TestColor> {
         return Scaffold(
           appBar: AppBar(
             title: Text(
-              (widget.lang!) ? "Color Recognition" : "التعرف علي اللون",
+              (widget.lang!) ? "Image Caption" : "وصف الصورة ",
               // appLocalizations(context).title,
               style: GoogleFonts.nunito(
                 fontSize: 25,
@@ -137,8 +137,8 @@ class _TestColorState extends State<TestColor> {
                     print("herrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrre" + data);
                     await flutterTts.stop();
                     //    setState(() {});
-                    _colorCubit.data = null;
-                    _colorCubit.getInitial(1);
+                    _imageCubit.data = null;
+                    _imageCubit.getInitial(1);
                     print('Back button pressed');
                   },
                 ),
@@ -161,28 +161,28 @@ class _TestColorState extends State<TestColor> {
               SizedBox(
                 height: 20,
               ),
-              if (state is ColorsInitialState)
+              if (state is ImageInitialState)
                 InitialState(
-                  func: () => _colorCubit.getInitial(2),
+                  func: () => _imageCubit.getInitial(2),
                   language: widget.lang,
                 )
               else
                 SecondInitial(
                     file: file!,
                     language1: widget.lang,
-                    func: () => _colorCubit.getColors(file!, ('en'))),
+                    func: () => _imageCubit.getCaption(file!, ('en'))),
               // }),
               SizedBox(
                 height: 30,
               ),
               // (flag == true)
               //   BlocBuilder<TextCubit, TextState>(builder: ((context, state) {
-              if (state is ColorsLoadingState)
+              if (state is ImageLoadingState)
                 CircularProgressIndicator(
                   valueColor: AlwaysStoppedAnimation<Color>(
                       Color(0xFF6b5ba0)), // Change color here
                 )
-              else if (state is ColorsSuccessState || _colorCubit.data != null)
+              else if (state is ImageSuccessState || _imageCubit.data != null)
                 Column(children: [
                   Text((widget.lang!) ? "Option" : 'قم بالإختيار',
                       style: GoogleFonts.pangolin(
@@ -196,12 +196,12 @@ class _TestColorState extends State<TestColor> {
                           print('Button Pressed');
                           //   flg1 = true;
                           //  setState(() {});
-                          if (state is ColorsSuccessState) {
+                          if (state is ImageSuccessState) {
                             data = state.data;
                             print("ffffffffffffffff" + data);
                             await flutterTts.stop();
 
-                            _colorCubit.displayColors(state.data);
+                            _imageCubit.displayCaption(state.data);
                           }
                         },
                         style: ElevatedButton.styleFrom(
@@ -264,7 +264,7 @@ class _TestColorState extends State<TestColor> {
                     ],
                   ),
                 ])
-              else if (state is ColorsFailureState)
+              else if (state is ImageFailureState)
                 // print("in the fail");
 
                 Text("Unable to Predict",
@@ -276,7 +276,7 @@ class _TestColorState extends State<TestColor> {
               // })),
 
               //  BlocBuilder<TextCubit, TextState>(builder: (context, state) {
-              if (state is ColorsDisplayState)
+              if (state is ImageDisplayState)
                 // print("in the disp " + _textCubit.data!);
                 // print("in the disppp" + data);
                 // expandeddddddddddddddd
@@ -291,9 +291,9 @@ class _TestColorState extends State<TestColor> {
           floatingActionButton: BlocProvider(
             create: (context) => SpeechRecognitionCubit()..initializeSpeech(),
             child: Speech(
-              func: () => _colorCubit.getInitial(2),
-              func1: () => _colorCubit.getColors(file!, ('en')),
-              func2: () => _colorCubit.displayColors(data),
+              func: () => _imageCubit.getInitial(2),
+              func1: () => _imageCubit.getCaption(file!, ('en')),
+              func2: () => _imageCubit.displayCaption(data),
             ),
           ),
         );

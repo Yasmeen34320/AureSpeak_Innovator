@@ -1,17 +1,36 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:speech_to_text/speech_to_text.dart' as stt;
 
-class SecondInitial extends StatelessWidget {
+class SecondInitial extends StatefulWidget {
   final File file;
   final bool? language1;
   final VoidCallback func;
-  const SecondInitial(
-      {super.key,
-      required this.file,
-      required this.language1,
-      required this.func});
+
+  const SecondInitial({
+    Key? key,
+    required this.file,
+    required this.language1,
+    required this.func,
+  }) : super(key: key);
+
+  @override
+  _SecondInitialState createState() => _SecondInitialState();
+}
+
+class _SecondInitialState extends State<SecondInitial> {
+  final stt.SpeechToText _speech = stt.SpeechToText();
+  FlutterTts flutterTts = FlutterTts();
+
+  @override
+  void initState() {
+    super.initState();
+    flutterTts = FlutterTts();
+    _speech.initialize();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,17 +54,18 @@ class SecondInitial extends StatelessWidget {
               ),
               // expandedddddddddddddddddddddddd
               Container(
-                  height: 100,
-                  width: 100,
-                  child: Image.file(
-                    file ?? File('temp_image.png'),
-                    fit: BoxFit.cover,
-                  )),
+                height: 100,
+                width: 100,
+                child: Image.file(
+                  widget.file ?? File('temp_image.png'),
+                  fit: BoxFit.cover,
+                ),
+              ),
               SizedBox(
                 height: 10,
               ),
               Text(
-                (language1 == true) ? "Your photo" : "صورتك",
+                (widget.language1 == true) ? "Your photo" : "صورتك",
                 style: GoogleFonts.nunito(
                   fontSize: 19.0,
                   color: Colors.black,
@@ -64,7 +84,7 @@ class SecondInitial extends StatelessWidget {
             print('Button Pressed');
             // flag = true;
             String language = '';
-            if (language1 == true)
+            if (widget.language1 == true)
               language = 'en';
             else
               language = 'ar';
@@ -73,10 +93,10 @@ class SecondInitial extends StatelessWidget {
             //  await performOCR(file!, language);
             // setState(() {});
             //   _textCubit.getText(file!, language);
-            print(file);
+            print(widget.file);
             print("in the ini2");
-            print(func);
-            func?.call();
+            print(widget.func);
+            widget.func?.call();
           },
           style: ElevatedButton.styleFrom(
             shape: RoundedRectangleBorder(
@@ -85,7 +105,7 @@ class SecondInitial extends StatelessWidget {
             backgroundColor: Color.fromARGB(255, 102, 87, 153),
           ),
           child: Text(
-            (language1 == true) ? 'Predict' : "تنبأ",
+            (widget.language1 == true) ? 'Predict' : "تنبأ",
             style: GoogleFonts.nunito(
                 fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
           ),

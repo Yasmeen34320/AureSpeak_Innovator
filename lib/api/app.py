@@ -6,12 +6,23 @@ import subprocess
 # from google.colab.patches import cv2_imshow
 import cv2
 import numpy as np
-
+#for imgee
+from transformers import VisionEncoderDecoderModel, ViTFeatureExtractor, AutoTokenizer
+import torch
+from PIL import Image
+#############
 pytesseract.pytesseract.tesseract_cmd = r'C:/Program Files/Tesseract-OCR/tesseract.exe'
 print ("runnninggggg")
 # Run the command to install tesseract-ocr-ara
 #subprocess.run(['sudo', 'apt-get', 'install', 'tesseract-ocr-ara'])
-
+#for imgeee
+# Load the model and tokenizer
+model = VisionEncoderDecoderModel.from_pretrained("nlpconnect/vit-gpt2-image-captioning")
+feature_extractor = ViTFeatureExtractor.from_pretrained("nlpconnect/vit-gpt2-image-captioning")
+tokenizer = AutoTokenizer.from_pretrained("nlpconnect/vit-gpt2-image-captioning")
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+model.to(device)
+#####3
 app = Flask(__name__)
 
 # # Set the path to Tesseract executable (update this with your actual Tesseract path)
@@ -148,6 +159,38 @@ def perform_color():
     except Exception as e:
         return jsonify({'errordfd': str(e)}), 500
 
+
+# Define route for image captioning
+@app.route('/api/image_caption', methods=['PUT'])
+def image_caption():
+    try:
+        # Get image file from request
+        file = request.files['image']
+
+        # Open image and preprocess
+        image = Image.open(file)
+        if image.mode != "RGB":
+            image = image.convert(mode="RGB")
+
+        # Perform image captioning
+        caption = predict_caption(image)
+        print('cptionnnnn' + caption)
+        # Return caption
+        return jsonify(caption)
+    
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    
+# Function to predict image caption
+def predict_caption(image):
+    inputs = feature_extractor(images=image, return_tensors="pt")
+    pixel_values = inputs.pixel_values.to(device)
+
+    output_ids = model.generate(pixel_values, max_length=16, num_beams=4)
+
+    captions = tokenizer.batch_decode(output_ids, skip_special_tokens=True)
+    captions = [caption.strip() for caption in captions]
+    return captions[0] if captions else "No caption generated"
 
 if __name__ == '__main__':
     app.run(debug=True, port=8000)

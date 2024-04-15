@@ -11,6 +11,7 @@ import 'package:grd_projecttt/Cubits/text_cubit/text_cubit.dart';
 import 'package:grd_projecttt/Cubits/text_cubit/text_state.dart';
 import 'package:grd_projecttt/Screens/color_screen.dart';
 import 'package:grd_projecttt/Screens/test_color.dart';
+import 'package:grd_projecttt/Screens/test_image.dart';
 import 'package:grd_projecttt/Screens/test_screen.dart';
 import 'package:grd_projecttt/Shared/card_camera.dart';
 import 'package:grd_projecttt/Shared/card_category.dart';
@@ -32,16 +33,13 @@ class DetailsScreen extends StatefulWidget {
 var number = -1;
 Map<String, Map<String, dynamic>> localizedStrings = {
   'en': {
-    'title': {0: 'Color Recognition', 1: 'Test Extraction'},
+    'title': {0: 'Color Recognition', 1: 'Test Extraction', 2: "Image Caption"},
     'title1': 'Text Extraction',
     'option': 'Using Camera',
     'option1': 'From Device',
   },
   'ar': {
-    'title': {
-      0: 'التعرف علي اللون',
-      1: ' استخراج الصور',
-    },
+    'title': {0: 'التعرف علي اللون', 1: ' استخراج الصور', 2: 'وصف الصورة '},
     'title1': ' استخراج النص',
     'option': 'بإستخدام الكاميرا ',
     'option1': 'من الجهاز',
@@ -94,8 +92,13 @@ class _DetailsScreenState extends State<DetailsScreen> {
   }
 
   Future<void> _speakOptions() async {
+    await flutterTts.setLanguage('en-US');
+
+    await flutterTts
+        .setSpeechRate(0.25); // Set the speech rate (adjust as needed)
+    await flutterTts.setPitch(1.0);
     await flutterTts.speak(
-        'Please select an option: 1 for color recognition, 2 for text extraction , 3 if you want me to repeat');
+        'Please select an option: 1 for color recognition, 2 for text extraction , 3 for Image Caption, 4 if you want me to repeat');
   }
 
   @override
@@ -118,7 +121,11 @@ class _DetailsScreenState extends State<DetailsScreen> {
       "involves the capability to identify and process colors within images or through the device's camera.",
       "simply point your device's camera at banknotes, and it  will identify the currency denomination."
     ];
-    List<String> dataimage = ["lib/assest/color1.jpg", "lib/assest/7.jpg"];
+    List<String> dataimage = [
+      "lib/assest/color1.jpg",
+      "lib/assest/7.jpg",
+      "lib/assest/color1.jpg"
+    ];
 
     return BlocConsumer<LanguageCubit, LanguageState>(
       builder: (context, state) {
@@ -129,6 +136,10 @@ class _DetailsScreenState extends State<DetailsScreen> {
                 : false,
           ),
           Testscreen(
+              lang: (BlocProvider.of<LanguageCubit>(context).language1 == 'en')
+                  ? true
+                  : false),
+          TestImage(
               lang: (BlocProvider.of<LanguageCubit>(context).language1 == 'en')
                   ? true
                   : false)
@@ -188,144 +199,149 @@ class _DetailsScreenState extends State<DetailsScreen> {
               ),
             ),
           ),
-          body: Column(
-            children: [
-              Image.asset(
-                "lib/assest/1 (6).png",
-                fit: BoxFit.cover,
-                color: Color(0xFF6b5ba0),
-              ),
-              SizedBox(
-                height: 18,
-              ),
-              // expandeddddddddddddddddddddddddddddd
-              Column(children: [
-                for (var i = 0; i < dataimage.length!; i++)
-                  InkWell(
-                    onTap: () async {
-                      await flutterTts.stop();
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            // Testscreen(def: widget.def1)
-                            builder: (context) => p[i]),
-                      );
-                    },
-                    child: MouseRegion(
-                      onEnter: (PointerEnterEvent event) {
-                        setState(() {
-                          isHovering = true;
-                        });
-                      },
-                      onExit: (PointerExitEvent event) {
-                        setState(() {
-                          isHovering = false;
-                        });
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        // expandeddddddddddddddddddddddddddddd
-                        child: Container(
-                          width: screenSize.width * 0.89,
-                          // height: screenSize.height * 0.4,
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                                color: Color(0xFF6b5ba0), width: 1.0),
-                            color: Color.fromARGB(255, 250, 242, 237),
-                            borderRadius: BorderRadius.all(Radius.circular(12)),
-                          ),
-                          child: Column(children: [
-                            SizedBox(
-                              height: 30,
-                            ),
-                            Container(
-                                height: 100,
-                                width: 100,
-                                child: Image.asset(
-                                  dataimage[i],
-                                  fit: BoxFit.cover,
-                                )),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            Text(
-                              ' ${localizedStrings[BlocProvider.of<LanguageCubit>(context).language1]!['title'][i]}',
-                              style: GoogleFonts.nunito(
-                                fontSize: 19.0,
-                                color: Colors.black,
-                                fontWeight: FontWeight.w500,
+          body: SingleChildScrollView(
+            child: Column(
+              children: [
+                Image.asset(
+                  "lib/assest/1 (6).png",
+                  fit: BoxFit.cover,
+                  color: Color(0xFF6b5ba0),
+                ),
+                SizedBox(
+                  height: 18,
+                ),
+                // expandeddddddddddddddddddddddddddddd
+                SingleChildScrollView(
+                  child: Column(children: [
+                    for (var i = 0; i < dataimage.length!; i++)
+                      InkWell(
+                        onTap: () async {
+                          await flutterTts.stop();
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                // Testscreen(def: widget.def1)
+                                builder: (context) => p[i]),
+                          );
+                        },
+                        child: MouseRegion(
+                          onEnter: (PointerEnterEvent event) {
+                            setState(() {
+                              isHovering = true;
+                            });
+                          },
+                          onExit: (PointerExitEvent event) {
+                            setState(() {
+                              isHovering = false;
+                            });
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            // expandeddddddddddddddddddddddddddddd
+                            child: Container(
+                              width: screenSize.width * 0.89,
+                              // height: screenSize.height * 0.4,
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                    color: Color(0xFF6b5ba0), width: 1.0),
+                                color: Color.fromARGB(255, 250, 242, 237),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(12)),
                               ),
-                            )
-                          ]),
+                              child: Column(children: [
+                                SizedBox(
+                                  height: 30,
+                                ),
+                                Container(
+                                    height: 100,
+                                    width: 100,
+                                    child: Image.asset(
+                                      dataimage[i],
+                                      fit: BoxFit.cover,
+                                    )),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Text(
+                                  ' ${localizedStrings[BlocProvider.of<LanguageCubit>(context).language1]!['title'][i]}',
+                                  style: GoogleFonts.nunito(
+                                    fontSize: 19.0,
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                )
+                              ]),
+                            ),
+                          ),
+                          // child: CardCamera(
+                          //   Images: dataimage[i],
+
+                          //   TestName: localizedStrings[
+                          //       BlocProvider.of<LanguageCubit>(context)
+                          //           .language1]!['title'][i], //datacolor[i],
+                          //   brief: databreif[i],
+                          //   path: p[i],
+                          // ),
+                        ),
+                      )
+                  ]),
+                )
+                // Expanded(
+                //   child: ListView.builder(
+                //     itemCount: 2, // Replace with your actual item count
+                //     itemBuilder: (context, index) {
+                //       // Replace with your list item widget
+                //       return InkWell(
+                //         onTap: () {
+                //           Navigator.push(
+                //             context,
+                //             MaterialPageRoute(builder: (context) => DetailsScreen()),
+                //           );
+                //         },
+                //         child: CardCategory(
+                //           Images: dataimage[index],
+                //           TestName: datacolor[index],
+                //           brief: databreif[index],
+                //           path: p[index],
+                //         ),
+                //       );
+                //     },
+                //   ),
+                // ),
+                ,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      width: 100,
+                      height: 100,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.only(
+                            bottomRight: Radius.circular(12.0),
+                            topRight: Radius.circular(12.0)),
+                        child: Image.asset(
+                          "lib/assest/1 (1).png",
+                          fit: BoxFit.cover,
                         ),
                       ),
-                      // child: CardCamera(
-                      //   Images: dataimage[i],
-
-                      //   TestName: localizedStrings[
-                      //       BlocProvider.of<LanguageCubit>(context)
-                      //           .language1]!['title'][i], //datacolor[i],
-                      //   brief: databreif[i],
-                      //   path: p[i],
-                      // ),
                     ),
-                  )
-              ])
-              // Expanded(
-              //   child: ListView.builder(
-              //     itemCount: 2, // Replace with your actual item count
-              //     itemBuilder: (context, index) {
-              //       // Replace with your list item widget
-              //       return InkWell(
-              //         onTap: () {
-              //           Navigator.push(
-              //             context,
-              //             MaterialPageRoute(builder: (context) => DetailsScreen()),
-              //           );
-              //         },
-              //         child: CardCategory(
-              //           Images: dataimage[index],
-              //           TestName: datacolor[index],
-              //           brief: databreif[index],
-              //           path: p[index],
-              //         ),
-              //       );
-              //     },
-              //   ),
-              // ),
-              ,
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    width: 100,
-                    height: 100,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.only(
-                          bottomRight: Radius.circular(12.0),
-                          topRight: Radius.circular(12.0)),
-                      child: Image.asset(
-                        "lib/assest/1 (1).png",
-                        fit: BoxFit.cover,
+                    Container(
+                      width: 120,
+                      height: 120,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.only(
+                            bottomRight: Radius.circular(12.0),
+                            topRight: Radius.circular(12.0)),
+                        child: Image.asset(
+                          "lib/assest/1 (4).png",
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     ),
-                  ),
-                  Container(
-                    width: 120,
-                    height: 120,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.only(
-                          bottomRight: Radius.circular(12.0),
-                          topRight: Radius.circular(12.0)),
-                      child: Image.asset(
-                        "lib/assest/1 (4).png",
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                ],
-              )
-            ],
+                  ],
+                )
+              ],
+            ),
           ),
           floatingActionButton: BlocProvider(
             create: (context) => SpeechRecognitionCubit()..initializeSpeech(),
@@ -368,7 +384,7 @@ class Speech extends StatelessWidget {
         .setSpeechRate(0.25); // Set the speech rate (adjust as needed)
     await flutterTts.setPitch(1.0);
     await flutterTts.speak(
-        'Please select an option: 1 for color recognition, 2 for text extraction , 3 if you want me to repeat');
+        'Please select an option: 1 for color recognition, 2 for text extraction , 3 for Image Caption, 4 if you want me to repeat');
   }
 
   @override
@@ -441,6 +457,14 @@ class Speech extends StatelessWidget {
                       builder: (context) => p[1]),
                 );
               } else if (number == 3) {
+                _speakSelected('Image Caption');
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      // Testscreen(def: widget.def1)
+                      builder: (context) => p[2]),
+                );
+              } else if (number == 4) {
                 _speakSelected("instructions again");
                 _speakOptions();
               } else {

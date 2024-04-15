@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:grd_projecttt/Cubits/speech_cubit/speech_cubit.dart';
+import 'package:grd_projecttt/Cubits/speech_cubit/speech_state.dart';
 import 'package:grd_projecttt/Cubits/text_cubit/text_cubit.dart';
 import 'package:grd_projecttt/Cubits/text_cubit/text_state.dart';
 import 'package:grd_projecttt/Screens/details_screen.dart';
@@ -38,6 +40,7 @@ class _TestscreenState extends State<Testscreen> {
     super.initState();
     _textCubit = TextCubit();
     flutterTts = FlutterTts();
+
     initializeTts();
   }
 
@@ -49,8 +52,15 @@ class _TestscreenState extends State<Testscreen> {
 
   Future<void> initializeTts() async {
     await flutterTts.setLanguage('en-US');
-    await flutterTts.setSpeechRate(1.0);
+    await flutterTts.setSpeechRate(0.25);
     await flutterTts.setPitch(1.0);
+  }
+
+  Future<void> _speak(String text) async {
+    await flutterTts.setLanguage('en-US');
+    await flutterTts.setSpeechRate(0.25);
+    await flutterTts.setPitch(1.0);
+    await flutterTts.speak(text);
   }
 
   @override
@@ -67,6 +77,14 @@ class _TestscreenState extends State<Testscreen> {
     return BlocProvider(
       create: (context) => _textCubit,
       child: BlocBuilder<TextCubit, TextState>(builder: (context, state) {
+        if (state is TextFailureState)
+          _speak('unable to predict the photo please try again later ');
+        else if (state is TextSuccessState) {
+          data = state.data;
+
+          _speak(
+              'successfully predict the photo please select an option 5 to the text or  6 for the speech ');
+        }
         return Scaffold(
           appBar: AppBar(
             title: Text(
@@ -255,6 +273,14 @@ class _TestscreenState extends State<Testscreen> {
                 Container(),
             ]),
           ),
+          floatingActionButton: BlocProvider(
+            create: (context) => SpeechRecognitionCubit()..initializeSpeech(),
+            child: Speech(
+              func: () => _textCubit.getInitial(2),
+              func1: () => _textCubit.getText(file!, ('en')),
+              func2: () => _textCubit.displayText(data),
+            ),
+          ),
         );
       }),
     );
@@ -262,10 +288,181 @@ class _TestscreenState extends State<Testscreen> {
 }
 
 Future<void> speakText() async {
-  await langdetect.initLangDetect();
+  await flutterTts.setLanguage('en-US');
+  await flutterTts.setSpeechRate(1.0);
+  await flutterTts.setPitch(1.0);
   print(data);
-  await flutterTts
-      .setSpeechRate(0.25); // Set the speech rate (adjust as needed)
-  await flutterTts.setPitch(1.0); // Set the pitch (adjust as needed)
+  // Set the pitch (adjust as needed)
   await flutterTts.speak(data);
+}
+
+class Speech extends StatelessWidget {
+  final VoidCallback func, func1, func2;
+
+  Speech(
+      {super.key,
+      required this.func,
+      required this.func1,
+      required this.func2});
+
+  final FlutterTts flutterTts = FlutterTts();
+
+  Future<void> _speakErrorMessage() async {
+    await flutterTts.setLanguage('en-US');
+    await flutterTts.setSpeechRate(0.25);
+    await flutterTts.setPitch(1.0);
+    await flutterTts.speak('Sorry, I didn\'t understand. Please try again.');
+    // Provide feedback to the user and prompt them to record again
+  }
+
+  Future<void> _speakSelected(String select) async {
+    await flutterTts.setLanguage('en-US');
+    await flutterTts.setSpeechRate(0.25);
+    await flutterTts.setPitch(1.0);
+    await flutterTts.speak('You choose the ' + select);
+    // Provide feedback to the user and prompt them to record again
+  }
+
+  Future<void> _speakOptions() async {
+    await flutterTts.setLanguage('en-US');
+    await flutterTts.setSpeechRate(0.25);
+    await flutterTts.setPitch(1.0);
+    await flutterTts.speak(
+        'Please select an option: 1 for using a camera, 2 for choosing photo from your device , 3 if you want me to repeat ');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<SpeechRecognitionCubit, SpeechState>(
+      builder: (context, state) {
+        print("im in speech");
+        return FloatingActionButton(
+          onPressed: () async {
+            await flutterTts.stop();
+
+            final cubit = context.read<SpeechRecognitionCubit>();
+            print("im in if stte + ");
+            print(state);
+            if (state is SpeechListeningState) {
+              print(cubit.recognizedText + "hhhhhhhhhhhhhhhhhhhh");
+              String recognizedText =
+                  context.read<SpeechRecognitionCubit>().recognizedText;
+              context.read<SpeechRecognitionCubit>().recognizedText = ' ';
+
+              List<String> words = recognizedText.split(' ');
+
+              // Iterate through the words to find a number from 1 to 5
+              for (String word in words) {
+                if (word == 'one' ||
+                    word == 'won' ||
+                    word == '1' ||
+                    word == 'won' ||
+                    word == 'wan') {
+                  number = 1;
+                  break;
+                } else if (word == 'two' ||
+                    word == '2' ||
+                    word == 'to' ||
+                    word == 'too') {
+                  number = 2;
+                  break;
+                } else if (word == 'three' ||
+                    word == 'tree' ||
+                    word == 'thre' ||
+                    word == '3') {
+                  number = 3;
+                  break;
+                } else if (word == 'four' || word == 'for' || word == '4') {
+                  number = 4;
+                  break;
+                } else if (word == 'five' ||
+                    word == 'hive' ||
+                    word == '5' ||
+                    word == 'vive') {
+                  number = 5;
+                  break;
+                } else if (word == 'six' ||
+                    word == 'sick' ||
+                    word == 'sex' ||
+                    word == '6' ||
+                    word == 'sics') {
+                  number = 6;
+                }
+              }
+
+              if (number == 1) {
+                _speakSelected('the Camera');
+                try {
+                  XFile? xfile =
+                      await ImagePicker().pickImage(source: ImageSource.camera);
+                  if (xfile != null) {
+                    print(xfile!.path);
+                    file = File(xfile.path);
+                    //  _textCubit.getInitial(2);
+                    func.call();
+                    cubit.stopListening();
+                  } else {
+                    // User cancelled image selection, close microphone and exit
+                    cubit.stopListening();
+                    return; // Exit from the else block
+                  }
+                } catch (e) {
+                  // Handle any errors that may occur during image picking
+                  print("Error picking image: $e");
+                  // Close microphone and exit
+                  cubit.stopListening();
+                  return;
+                }
+              } else if (number == 2) {
+                number = -1;
+                _speakSelected('the photo from device');
+                try {
+                  XFile? xfile = await ImagePicker()
+                      .pickImage(source: ImageSource.gallery);
+                  if (xfile != null) {
+                    print(xfile.path);
+                    file = File(xfile.path);
+                    print(file);
+                    print("in the ini1");
+                    print(func);
+                    func.call();
+                    cubit.stopListening();
+                  } else {
+                    // User cancelled image selection, close microphone and exit
+                    cubit.stopListening();
+                    return; // Exit from the else block
+                  }
+                } catch (e) {
+                  // Handle any errors that may occur during image picking
+                  print("Error picking image: $e");
+                  // Close microphone and exit
+                  cubit.stopListening();
+                  return;
+                }
+              } else if (number == 3) {
+                _speakSelected("instructions again");
+                _speakOptions();
+              } else if (number == 4) {
+                func1.call();
+              } else if (number == 5) {
+                func2.call();
+              } else if (number == 6) {
+                speakText();
+              } else {
+                _speakErrorMessage();
+              }
+              number = -1;
+              cubit.stopListening();
+            } else {
+              cubit.startListening();
+            }
+          },
+          child: Icon(
+            state is SpeechListeningState ? Icons.stop : Icons.mic,
+          ),
+          backgroundColor: state is SpeechListeningState ? Colors.red : null,
+        );
+      },
+    );
+  }
 }

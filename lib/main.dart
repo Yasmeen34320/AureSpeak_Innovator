@@ -8,6 +8,7 @@ import 'package:grd_projecttt/Screens/details_screen.dart';
 import 'package:grd_projecttt/Screens/test_screen.dart';
 import 'package:grd_projecttt/Shared/card_category.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:grd_projecttt/test/m1.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -66,6 +67,7 @@ class MyApp extends StatelessWidget {
             //     brief:
             //         "involves the capability to identify and process colors within images or through the device's camera."),
             //    Testscreen(),
+            // adb reverse tcp:8000 tcp:8000
             DetailsScreen(lang1: default1),
       ),
     );

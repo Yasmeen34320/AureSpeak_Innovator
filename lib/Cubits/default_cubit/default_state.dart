@@ -1,0 +1,19 @@
+abstract class DefaultState {}
+
+class DefaultInitialState extends DefaultState {}
+
+class DefaultSecondInitialState extends DefaultState {}
+
+class DefaultDisplayState extends DefaultState {
+  String data;
+  DefaultDisplayState({required this.data});
+}
+
+class DefaultLoadingState extends DefaultState {}
+
+class DefaultSuccessState extends DefaultState {
+  String data;
+  DefaultSuccessState({required this.data});
+}
+
+class DefaultFailureState extends DefaultState {}

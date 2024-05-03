@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:grd_projecttt/Screens/test_screen.dart';
+import 'package:grd_projecttt/Screens/default_screen.dart';
 
 import 'package:image_picker/image_picker.dart';
 

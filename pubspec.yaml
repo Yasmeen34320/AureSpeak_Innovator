@@ -37,13 +37,16 @@ dependencies:
   flutter_langdetect: 
   flutter_localizations:
     sdk: flutter
+  flutter_svg: ^2.0.10+1
   flutter_tts: 
   font_awesome_flutter: 
   google_fonts: 
   http: 
   image_picker: 
+  lottie: ^3.1.0
   provider: 
   speech_to_text: ^6.6.1
+  string_similarity: ^2.0.0
   translator: 
 dev_dependencies:
 
@@ -70,6 +73,10 @@ flutter:
   assets:
     - lib/assest/
     - temp_image1.jpg
+    - lib/assest/Animation/
+    - lib/assest/Animation/loading/
+
+    # - lib/assest/Animation/stop.json
     #: - lib/assest/money1.jpg
     # - lib/assest/Camera.png
     # - lib/assest/folder.png

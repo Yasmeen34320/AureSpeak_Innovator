@@ -5,7 +5,6 @@ import 'package:grd_projecttt/Cubits/speech_cubit/speech_cubit.dart';
 import 'package:grd_projecttt/Cubits/speech_cubit/speech_state.dart';
 import 'package:grd_projecttt/Cubits/text_cubit/text_cubit.dart';
 import 'package:grd_projecttt/Screens/details_screen.dart';
-import 'package:grd_projecttt/Screens/test_screen.dart';
 import 'package:grd_projecttt/Shared/card_category.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:grd_projecttt/test/m1.dart';

@@ -23,8 +23,9 @@ class TextCubit extends Cubit<TextState> {
     emit(TextLoadingState());
     try {
       var request = http.MultipartRequest(
-        'PUT', // 127.0.0.1 (windows) ,, 192.168.1.7 , 10.0.2.2
-        Uri.parse('http://192.168.1.7:8000/api/perform_ocr/$language'),
+        'PUT', // 127.0.0.1 (windows) ,, 192.168.1.7 , 10.0.2.2,http://192.168.1.7:8003
+        Uri.parse(// https://pdnfbn1b-8000.euw.devtunnels.ms/api/perform_ocr/en
+            'https://pdnfbn1b-8000.euw.devtunnels.ms/api/perform_ocr/$language'),
       );
       request.files.add(http.MultipartFile(
         'image',

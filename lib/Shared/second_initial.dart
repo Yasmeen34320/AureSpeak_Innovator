@@ -8,14 +8,17 @@ import 'package:speech_to_text/speech_to_text.dart' as stt;
 class SecondInitial extends StatefulWidget {
   final File file;
   final bool? language1;
-  final VoidCallback func;
-
-  const SecondInitial({
-    Key? key,
-    required this.file,
-    required this.language1,
-    required this.func,
-  }) : super(key: key);
+  final VoidCallback funcCaption, funcText, funcColor;
+  final String option;
+  const SecondInitial(
+      {Key? key,
+      required this.file,
+      required this.language1,
+      required this.funcCaption,
+      required this.funcColor,
+      required this.funcText,
+      required this.option})
+      : super(key: key);
 
   @override
   _SecondInitialState createState() => _SecondInitialState();
@@ -94,9 +97,17 @@ class _SecondInitialState extends State<SecondInitial> {
             // setState(() {});
             //   _textCubit.getText(file!, language);
             print(widget.file);
+            await flutterTts.stop();
+//     'title': {0: 'Color Recognition', 1: 'Text Extraction', 2: "Image Caption"},
+
             print("in the ini2");
-            print(widget.func);
-            widget.func?.call();
+            // print(widget.func);
+            if (widget.option == 'Color Recognition')
+              widget.funcColor.call();
+            else if (widget.option == 'Text Extraction')
+              widget.funcText.call();
+            else
+              widget.funcCaption.call();
           },
           style: ElevatedButton.styleFrom(
             shape: RoundedRectangleBorder(

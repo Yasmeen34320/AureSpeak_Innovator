@@ -29,7 +29,5 @@ def predict_step(image_paths):
   preds = tokenizer.batch_decode(output_ids, skip_special_tokens=True)
   preds = [pred.strip() for pred in preds]
   return preds
-print(3)
 pred = predict_step(['D:/vs code/flutter/grd_project/grd_projecttt/lib/api/free-images.jpg'])
-print(4)
 print (pred)

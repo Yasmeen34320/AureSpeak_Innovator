@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:bloc/bloc.dart';
 import 'package:grd_projecttt/Cubits/speech_cubit/speech_state.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
@@ -18,11 +20,14 @@ class SpeechRecognitionCubit extends Cubit<SpeechState> {
     }
   }
 
-  Future<void> startListening() async {
+  Future<void> startListening(bool lang) async {
     if (!(state is SpeechListeningState)) {
       emit(SpeechListeningState());
-      _recognizedText = ''; // Reset recognized text
+      _recognizedText = '';
+      String localeId = lang ? 'en-US' : 'ar';
+// Reset recognized text
       _speech.listen(
+        localeId: localeId,
         onResult: (result) {
           print(result.recognizedWords + "hhh+++++++++++");
           _recognizedText = result.recognizedWords;

@@ -82,11 +82,20 @@ color_ranges = {
     'Beige': ([20, 50, 120], [30, 150, 255]),
     'Mint': ([50, 50, 120], [70, 150, 255]),
     'Black': ([0, 0, 0], [180, 255, 30]),
+    'White': ([0, 0, 200], [180, 50, 255])
 }
-
 def get_contour_area(contour):
     x, y, w, h = cv2.boundingRect(contour)
     return w * h 
+
+def update_largest_object(contour, color,largest_object_color,largest_object_area,largest_object_coordinates):
+            # nonlocal largest_object_area, largest_object_color, largest_object_coordinates
+            contour_area = get_contour_area(contour)
+            if contour_area > largest_object_area:
+                largest_object_area = contour_area
+                largest_object_color = color
+                largest_object_coordinates = cv2.boundingRect(contour)
+            return largest_object_color,largest_object_area ,largest_object_coordinates
 
 @app.route('/')
 def hello():
@@ -98,8 +107,14 @@ def perform_color():
         print("its stuckkkk")
         file = request.files['image']
         print("Received file:", file.filename)
+        filename = file.filename  # Get the filename from the request
+        print(filename)
+
+        if not filename:  # If filename is not provided, default to 'edittt.png'
+            filename = 'edittt.png'
+        print(filename)
       #  temp_image_path = 'D:/vs code/flutter/grd_project/grd_projecttt/lib/api/temp_image2.jpg'  # Temporary file path
-        temp_image_path = 'edittt.jpg'  # Temporary file path
+        temp_image_path = filename #'edittt.png'  # Temporary file path
         
         file.save(temp_image_path)
 
@@ -128,14 +143,7 @@ def perform_color():
         largest_object_coordinates = None
 
         # Function to update the largest object information
-        def update_largest_object(contour, color):
-            nonlocal largest_object_area, largest_object_color, largest_object_coordinates
-            contour_area = get_contour_area(contour)
-            if contour_area > largest_object_area:
-                largest_object_area = contour_area
-                largest_object_color = color
-                largest_object_coordinates = cv2.boundingRect(contour)
-
+        
         # Loop through each color range
         for color, (lower, upper) in color_ranges.items():
             mask = cv2.inRange(hsv, np.array(lower), np.array(upper))
@@ -145,8 +153,8 @@ def perform_color():
             for cnt in contours:
                 contour_area = get_contour_area(cnt)
                 if contour_area > 1000:  # You can adjust the area threshold as needed
-                    update_largest_object(cnt, color)
-
+                   largest_object_color,largest_object_area,largest_object_coordinates= update_largest_object(cnt, color,largest_object_color,largest_object_area,largest_object_coordinates)
+        print(largest_object_color)
         # If an object is detected, draw a rectangle and return the color
         if largest_object_area > 0:
             x, y, w, h = largest_object_coordinates

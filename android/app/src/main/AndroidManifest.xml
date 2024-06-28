@@ -4,6 +4,8 @@
     <queries>
         <intent>
             <action android:name="android.speech.RecognitionService" />
+            <!-- <action android:name="android.intent.action.TTS_SERVICE" /> -->
+
         </intent>
     </queries>
  <uses-sdk android:minSdkVersion="21" />

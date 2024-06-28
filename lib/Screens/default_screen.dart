@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_langdetect/language.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:grd_projecttt/Cubits/default_cubit/default_cubit.dart';
 import 'package:grd_projecttt/Cubits/default_cubit/default_state.dart';
@@ -25,8 +26,13 @@ String textToSpeak = "";
 
 class DefaultScreen extends StatefulWidget {
   final bool? lang;
+  final bool? voice;
   final dynamic title;
-  const DefaultScreen({super.key, required this.lang, required this.title});
+  const DefaultScreen(
+      {super.key,
+      required this.voice,
+      required this.lang,
+      required this.title});
 
   @override
   State<DefaultScreen> createState() => _DefaultScreenState();
@@ -77,7 +83,7 @@ class _DefaultScreenState extends State<DefaultScreen> {
       await flutterTts.setLanguage('ar-AR');
       await flutterTts
           .setSpeechRate(0.25); // Set the speech rate (adjust as needed)
-      await flutterTts.setPitch(1.0);
+      await flutterTts.setPitch(0.8);
       await flutterTts.speak(option['ar']);
     }
   }
@@ -127,22 +133,78 @@ class _DefaultScreenState extends State<DefaultScreen> {
               (widget.lang!) ? widget.title['en'] : widget.title['ar'],
               // appLocalizations(context).title,
               style: GoogleFonts.nunito(
-                fontSize: 25,
+                fontSize: (ScreenUtil().orientation == Orientation.landscape)
+                    ? 14.sp
+                    : 22.sp,
                 color: Color.fromRGBO(7, 7, 7, 1),
                 fontWeight: FontWeight.bold,
               ),
             ),
             backgroundColor: Colors.white,
+            actions: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: InkWell(
+                    onTap: () async {
+                      print(voice);
+                      if (voice) {
+                        await flutterTts.stop();
+                        flutterTts.setVolume(0);
+                        voice = false;
+                        setState(() {});
+                      } else {
+                        voice = true;
+                        flutterTts.setVolume(1);
+                        setState(() {});
+                      }
+                      // Set volume to 0 to mute the voice
+                    },
+                    child: (voice
+                        ? Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Icon(
+                              Icons.record_voice_over,
+                              color: Color(0xFF6b5ba0),
+                              weight: 0.8,
+                              size: (ScreenUtil().orientation ==
+                                      Orientation.landscape)
+                                  ? 18.sp
+                                  : 28.sp,
+                            ),
+                          )
+                        : Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Icon(
+                              Icons.voice_over_off,
+                              color: Color(0xFF6b5ba0),
+                              weight: 0.8,
+                              size: (ScreenUtil().orientation ==
+                                      Orientation.landscape)
+                                  ? 18.sp
+                                  : 28.sp,
+                            ),
+                          ))
+                    //  Lottie.asset(
+                    //   'lib/assest/Animation/stop4.json',
+                    //   width: 200,
+                    //   height: 200,
+                    //   repeat: true,
+                    // ),
+                    ),
+              ),
+            ],
             leading: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Container(
                 decoration: BoxDecoration(
                   color: Color(0xFF6b5ba0), // Color(0xFF5164BF),
-                  borderRadius: BorderRadius.circular(15),
+                  borderRadius: BorderRadius.circular(13.r),
                 ),
                 child: IconButton(
                   icon: Icon(Icons.arrow_back),
-                  iconSize: 25,
+                  iconSize: (ScreenUtil().orientation == Orientation.landscape)
+                      ? 13.sp
+                      : 25.sp,
                   color: Colors.white,
                   onPressed: () async {
                     // Add your custom logic for handling the back button press
@@ -172,188 +234,202 @@ class _DefaultScreenState extends State<DefaultScreen> {
           body: Container(
             width: screenSize.width,
             height: screenSize.height,
-            child: Column(children: <Widget>[
-              Image.asset(
-                "lib/assest/1 (6).png",
-                fit: BoxFit.cover,
-                color: Color(0xFF6b5ba0),
-              ),
-              SizedBox(
-                height: 18,
-              ),
+            child: SingleChildScrollView(
+              child: Column(children: <Widget>[
+                Image.asset(
+                  "lib/assest/1 (6).png",
+                  fit: BoxFit.cover,
+                  color: Color(0xFF6b5ba0),
+                ),
+                // SizedBox(
+                //   height: 18.h,
+                // ),
 
-              SizedBox(
-                height: 20,
-              ),
-              if (state is DefaultInitialState)
-                InitialState(
-                  func: () => _defaultCubit.getInitial(2),
-                  language: widget.lang,
-                )
-              else
-                SecondInitial(
-                    file: file!,
-                    language1: widget.lang,
-                    option: widget.title['en'],
-                    funcText: () => _defaultCubit.getText(file!, ('en')),
-                    funcColor: () => _defaultCubit.getColors(file!, ('en')),
-                    funcCaption: () => _defaultCubit.getCaption(file!, ('en'))),
-              // }),
-              SizedBox(
-                height: 30,
-              ),
-              // (flag == true)
-              //   BlocBuilder<TextCubit, TextState>(builder: ((context, state) {
-              if (state is DefaultLoadingState)
-                Lottie.asset(
-                  // 2 3
-                  'lib/assest/Animation/loading/3.json',
-                  width: 150,
-                  height: 150,
-                  repeat: true,
-                ) // CircularProgressIndicator(
-              //   valueColor: AlwaysStoppedAnimation<Color>(
-              //       Color(0xFF6b5ba0)), // Change color here
-              // )
-              else if (state is DefaultSuccessState ||
-                  _defaultCubit.data != null)
-                Column(
-                  children: [
-                    Center(
-                      child: Text(
-                        ('The prediction is : $data'),
-                        style: GoogleFonts.nunito(
-                          fontSize: 17,
-                          color: Color.fromRGBO(7, 7, 7, 1),
-                          fontWeight: FontWeight.bold,
+                if (state is DefaultInitialState)
+                  InitialState(
+                    func: () => _defaultCubit.getInitial(2),
+                    language: widget.lang,
+                  )
+                else
+                  SecondInitial(
+                      file: file!,
+                      language1: widget.lang,
+                      option: widget.title['en'],
+                      funcText: () => _defaultCubit.getText(file!, ('en')),
+                      funcColor: () => _defaultCubit.getColors(file!, ('en')),
+                      funcCaption: () =>
+                          _defaultCubit.getCaption(file!, ('en'))),
+                // }),
+                SizedBox(
+                  height: 30.h,
+                ),
+                // (flag == true)
+                //   BlocBuilder<TextCubit, TextState>(builder: ((context, state) {
+                if (state is DefaultLoadingState)
+                  Lottie.asset(
+                    // 2 3
+                    'lib/assest/Animation/loading/3.json',
+                    width: 150.w,
+                    height: 150.h,
+                    repeat: true,
+                  ) // CircularProgressIndicator(
+                //   valueColor: AlwaysStoppedAnimation<Color>(
+                //       Color(0xFF6b5ba0)), // Change color here
+                // )
+                else if (state is DefaultSuccessState ||
+                    _defaultCubit.data != null)
+                  Column(
+                    children: [
+                      Center(
+                        child: Text(
+                          ('The prediction is : $data'),
+                          style: GoogleFonts.nunito(
+                            fontSize: (ScreenUtil().orientation ==
+                                    Orientation.landscape)
+                                ? 9.sp
+                                : 17.sp,
+                            color: Color.fromRGBO(7, 7, 7, 1),
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
-                    ),
-                    InkWell(
-                        onTap: speakText,
-                        child: Lottie.asset(
-                          // v2
-                          'lib/assest/Animation/v2.json',
-                          width: 150,
-                          height: 150,
-                          repeat: true,
-                        ))
-                  ],
-                )
-              // Column(children: [
-              //   Text((widget.lang!) ? "Option" : 'قم بالإختيار',
-              //       style: GoogleFonts.pangolin(
-              //           fontSize: 22, fontWeight: FontWeight.bold)),
-              //   Row(
-              //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              //     children: [
-              //       ElevatedButton(
-              //         onPressed: () async {
-              //           // Handle button press
-              //           print('Button Pressed');
-              //           //   flg1 = true;
-              //           //  setState(() {});
-              //           await flutterTts.stop();
+                      InkWell(
+                          onTap: speakText,
+                          child: Lottie.asset(
+                            // v2
+                            'lib/assest/Animation/speech2.json',
+                            width: 150.w,
+                            height: 150.h,
+                            repeat: true,
+                          ))
+                    ],
+                  )
+                // Column(children: [
+                //   Text((widget.lang!) ? "Option" : 'قم بالإختيار',
+                //       style: GoogleFonts.pangolin(
+                //           fontSize: 22, fontWeight: FontWeight.bold)),
+                //   Row(
+                //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                //     children: [
+                //       ElevatedButton(
+                //         onPressed: () async {
+                //           // Handle button press
+                //           print('Button Pressed');
+                //           //   flg1 = true;
+                //           //  setState(() {});
+                //           await flutterTts.stop();
 
-              //           if (state is DefaultSuccessState) {
-              //             data = state.data;
-              //             print("ffffffffffffffff" + data);
-              //             await flutterTts.stop();
+                //           if (state is DefaultSuccessState) {
+                //             data = state.data;
+                //             print("ffffffffffffffff" + data);
+                //             await flutterTts.stop();
 
-              //             _defaultCubit.displayText(state.data);
-              //           }
-              //         },
-              //         style: ElevatedButton.styleFrom(
-              //           shape: RoundedRectangleBorder(
-              //             borderRadius: BorderRadius.circular(8.0),
-              //           ),
-              //           backgroundColor: Color.fromARGB(255, 102, 87, 153),
-              //         ),
-              //         child: Row(
-              //           mainAxisSize: MainAxisSize.min,
-              //           children: [
-              //             Icon(
-              //               Icons.text_format,
-              //               color: Colors.white,
-              //               size: 30,
-              //             ),
-              //             SizedBox(width: 4.0),
-              //             Text(
-              //               (widget.lang!) ? 'Text' : 'نص',
-              //               style: GoogleFonts.nunito(
-              //                   fontSize: 20,
-              //                   fontWeight: FontWeight.bold,
-              //                   color: Colors.white),
-              //             ),
-              //           ],
-              //         ),
-              //       ),
-              //       ElevatedButton(
-              //         onPressed: () async {
-              //           print("spek " + data);
-              //           await flutterTts.stop();
+                //             _defaultCubit.displayText(state.data);
+                //           }
+                //         },
+                //         style: ElevatedButton.styleFrom(
+                //           shape: RoundedRectangleBorder(
+                //             borderRadius: BorderRadius.circular(8.0),
+                //           ),
+                //           backgroundColor: Color.fromARGB(255, 102, 87, 153),
+                //         ),
+                //         child: Row(
+                //           mainAxisSize: MainAxisSize.min,
+                //           children: [
+                //             Icon(
+                //               Icons.text_format,
+                //               color: Colors.white,
+                //               size: 30,
+                //             ),
+                //             SizedBox(width: 4.0),
+                //             Text(
+                //               (widget.lang!) ? 'Text' : 'نص',
+                //               style: GoogleFonts.nunito(
+                //                   fontSize: 20,
+                //                   fontWeight: FontWeight.bold,
+                //                   color: Colors.white),
+                //             ),
+                //           ],
+                //         ),
+                //       ),
+                //       ElevatedButton(
+                //         onPressed: () async {
+                //           print("spek " + data);
+                //           await flutterTts.stop();
 
-              //           speakText();
-              //         },
-              //         style: ElevatedButton.styleFrom(
-              //           shape: RoundedRectangleBorder(
-              //             borderRadius: BorderRadius.circular(8.0),
-              //           ),
-              //           backgroundColor: Color.fromARGB(255, 102, 87, 153),
-              //         ),
-              //         child: Row(
-              //           mainAxisSize: MainAxisSize.min,
-              //           children: [
-              //             Icon(
-              //               Icons.record_voice_over_outlined,
-              //               color: Colors.white,
-              //               size: 30,
-              //             ),
-              //             SizedBox(width: 6.0),
-              //             Text(
-              //               (widget.lang!) ? 'Speech' : 'صوت',
-              //               style: GoogleFonts.nunito(
-              //                   fontSize: 20,
-              //                   fontWeight: FontWeight.bold,
-              //                   color: Colors.white),
-              //             ),
-              //           ],
-              //         ),
-              //       ),
-              //     ],
-              //   ),
-              // ])
+                //           speakText();
+                //         },
+                //         style: ElevatedButton.styleFrom(
+                //           shape: RoundedRectangleBorder(
+                //             borderRadius: BorderRadius.circular(8.0),
+                //           ),
+                //           backgroundColor: Color.fromARGB(255, 102, 87, 153),
+                //         ),
+                //         child: Row(
+                //           mainAxisSize: MainAxisSize.min,
+                //           children: [
+                //             Icon(
+                //               Icons.record_voice_over_outlined,
+                //               color: Colors.white,
+                //               size: 30,
+                //             ),
+                //             SizedBox(width: 6.0),
+                //             Text(
+                //               (widget.lang!) ? 'Speech' : 'صوت',
+                //               style: GoogleFonts.nunito(
+                //                   fontSize: 20,
+                //                   fontWeight: FontWeight.bold,
+                //                   color: Colors.white),
+                //             ),
+                //           ],
+                //         ),
+                //       ),
+                //     ],
+                //   ),
+                // ])
 
-              ///
-              else if (state is DefaultFailureState)
-                // print("in the fail");
+                ///
+                else if (state is DefaultFailureState)
+                  // print("in the fail");
 
-                Text("Unable to Predict",
-                    style: GoogleFonts.pangolin(
-                        fontSize: 22, fontWeight: FontWeight.bold))
-              else
-                Container(),
+                  Text("Unable to Predict",
+                      style: GoogleFonts.pangolin(
+                          fontSize: (ScreenUtil().orientation ==
+                                  Orientation.landscape)
+                              ? 11.sp
+                              : 22.sp,
+                          fontWeight: FontWeight.bold))
+                else
+                  Container(),
 
-              // })),
+                // })),
 
-              //  BlocBuilder<TextCubit, TextState>(builder: (context, state) {
-              if (state is DefaultDisplayState)
-                // print("in the disp " + _textCubit.data!);
-                // print("in the disppp" + data);
-                // expandeddddddddddddddd
-                Text("prediction: " + state.data, //data,
-                    style: GoogleFonts.nunito(
-                        fontSize: 15, fontWeight: FontWeight.bold))
-              else
-                //  print("kjkjkkjkjkjkj");
-                Container(),
-            ]),
+                //  BlocBuilder<TextCubit, TextState>(builder: (context, state) {
+                if (state is DefaultDisplayState)
+                  // print("in the disp " + _textCubit.data!);
+                  // print("in the disppp" + data);
+                  // expandeddddddddddddddd
+                  Text("prediction: " + state.data, //data,
+                      style: GoogleFonts.nunito(
+                          fontSize: (ScreenUtil().orientation ==
+                                  Orientation.landscape)
+                              ? 13.sp
+                              : 17.sp,
+                          fontWeight: FontWeight.bold))
+                else
+                  //  print("kjkjkkjkjkjkj");
+                  Container(),
+              ]),
+            ),
           ),
           floatingActionButton: BlocProvider(
             create: (context) => SpeechRecognitionCubit()..initializeSpeech(),
             child: Speech(
+              title: widget.title['en'],
               func: () => _defaultCubit.getInitial(2),
               func1: () => _defaultCubit.getCaption(file!, ('en')),
+              func3: () => _defaultCubit.getColors(file!, ('en')),
+              func4: () => _defaultCubit.getText(file!, ('en')),
               func2: () => _defaultCubit.displayText(data),
               language: (widget.lang!) ? true : false,
               statee: _defaultCubit.state,
@@ -374,10 +450,13 @@ Future<void> speakText() async {
 }
 
 class Speech extends StatelessWidget {
-  final VoidCallback func, func1, func2;
-
+  final VoidCallback func, func1, func2, func3, func4;
+  final String? title;
   Speech(
       {super.key,
+      required this.title,
+      required this.func3,
+      required this.func4,
       required this.func,
       required this.func1,
       required this.func2,
@@ -398,7 +477,7 @@ class Speech extends StatelessWidget {
       await flutterTts.setLanguage('ar-AR');
       await flutterTts
           .setSpeechRate(0.25); // Set the speech rate (adjust as needed)
-      await flutterTts.setPitch(1.0);
+      await flutterTts.setPitch(0.8);
       await flutterTts.speak(option['ar']);
     }
   }
@@ -557,14 +636,35 @@ class Speech extends StatelessWidget {
                   return;
                 }
               } else if (number == 3) {
-                _speakOptions({
-                  'ar':
-                      'سنقوم بالتعرف علي اللون في الصورة , من فضلك قم بالإنتظار بضعة ثوانى',
-                  'en':
-                      'we will predict the color of the photo , please wait for few seconds'
-                });
+                //     'title': {0: 'Color Recognition', 1: 'Text Extraction', 2: "Image Caption"},
+/*  func1: () => _defaultCubit.getCaption(file!, ('en')),
+              func3:()=>_defaultCubit.getColors(file!, ('en')),
+              func4:()=>_defaultCubit.getText(file!, ('en')), */
+                if (title == "Color Recognition") {
+                  _speakOptions({
+                    'ar':
+                        'سنقوم بالتعرف علي اللون في الصورة , من فضلك قم بالإنتظار بضعة ثوانى',
+                    'en':
+                        'we will predict the color of the photo , please wait for few seconds'
+                  });
+                  func3.call();
+                } else if (title == "Text Extraction") {
+                  _speakOptions({
+                    'ar':
+                        'سنقوم بإستخراج النص من  الصورة , من فضلك قم بالإنتظار بضعة ثوانى',
+                    'en':
+                        'we will extract the text from the photo , please wait for few seconds'
+                  });
+                  func4.call();
+                } else {
+                  _speakOptions({
+                    'ar': 'سنقوم بوصف الصورة , من فضلك قم بالإنتظار بضعة ثوانى',
+                    'en':
+                        'we will describe the photo , please wait for few seconds'
+                  });
+                  func1.call();
+                }
 
-                func1.call();
                 cubit.stopListening();
               } else if (number == 4) {
                 _speakOptions({

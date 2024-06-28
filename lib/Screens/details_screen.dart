@@ -1,27 +1,25 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_langdetect/language.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:grd_projecttt/Cubits/language_cubit/language_cubit.dart';
 import 'package:grd_projecttt/Cubits/language_cubit/language_state.dart';
 import 'package:grd_projecttt/Cubits/speech_cubit/speech_cubit.dart';
 import 'package:grd_projecttt/Cubits/speech_cubit/speech_state.dart';
+import 'package:grd_projecttt/Screens/deetails_games.dart';
 import 'package:grd_projecttt/Screens/default_screen.dart';
+import 'package:grd_projecttt/Screens/math_game_screen.dart';
 import 'package:string_similarity/string_similarity.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import 'package:grd_projecttt/Cubits/text_cubit/text_cubit.dart';
-import 'package:grd_projecttt/Cubits/text_cubit/text_state.dart';
-import 'package:grd_projecttt/Shared/card_camera.dart';
-import 'package:grd_projecttt/Shared/card_category.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:lottie/lottie.dart';
 
-import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:intl/intl.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 
 class DetailsScreen extends StatefulWidget {
@@ -33,18 +31,40 @@ class DetailsScreen extends StatefulWidget {
 }
 
 var number = -1;
-Map<String, Map<String, dynamic>> localizedStrings = {
+Map<String, Map<dynamic, dynamic>> localizedStrings = {
   'en': {
-    'title': {0: 'Color Recognition', 1: 'Text Extraction', 2: "Image Caption"},
+    'title': {
+      0: 'Color Recognition',
+      1: 'Text Extraction',
+      2: "Image Caption",
+      3: "Games",
+    },
     'title1': 'Text Extraction',
     'option': 'Using Camera',
     'option1': 'From Device',
+    'options': {
+      0: 'Math Game',
+      1: 'Colors Matching',
+      2: 'Memory Matching',
+      3: 'Options Game'
+    },
   },
   'ar': {
-    'title': {0: 'التعرف علي اللون', 1: ' استخراج الصور', 2: 'وصف الصورة '},
+    'title': {
+      0: 'التعرف علي اللون',
+      1: ' استخراج النص من الصورة',
+      2: 'وصف الصورة ',
+      3: 'العاب',
+    },
     'title1': ' استخراج النص',
     'option': 'بإستخدام الكاميرا ',
     'option1': 'من الجهاز',
+    'options': {
+      0: 'عمليات حسابية',
+      1: 'توافق الالوان',
+      2: 'توافق الذاكرة',
+      3: 'لعبة الاختيارات'
+    },
   },
 };
 // AppLocalizations appLocalizations(BuildContext context) {
@@ -81,6 +101,7 @@ Map<String, Map<String, dynamic>> localizedStrings = {
 //     notifyListeners();
 //   }
 // }
+bool voice = true;
 
 class _DetailsScreenState extends State<DetailsScreen> {
   final stt.SpeechToText _speech = stt.SpeechToText();
@@ -91,13 +112,15 @@ class _DetailsScreenState extends State<DetailsScreen> {
   void initState() {
     super.initState();
     _speech.initialize();
+    flutterTts.stop();
+
     f = 0;
-    _speakOptions({
-      'ar':
-          "  ,انت الان تستخدم اللغة العربية , إذا كنت تريد تغيير اللغة من فضلك قم بالضغط على الزر في أعلى الشاشة على اليمين , من فضلك قم بالإختيار , 1 اذا كنت تريد التعرف على اللون , 2 اذا كنت تريد استخراج النص من الصورة , 3 اذا كنت تريد وصف الصورة , 4 اذا كنت تريد اعادة هذه التعليمات مرة أخرى",
-      'en':
-          "you are using the english language now , if you want to change the language please press the button that is located on the right top of the screen , Please select an option: 1 for color recognition, 2 for text extraction , 3 for Image Caption, 4 if you want me to repeat"
-    }, (widget.lang1 == true) ? 1 : 0);
+    // _speakOptions({
+    //   'ar':
+    //       "أَنْتَ الآنَ تَسْتَخْدِمُ اللُّغَةَ العَرَبِيَّةَ. إِذَا كُنْتَ تُرِيدُ تَغْيِيرَ اللُّغَةِ، مِنْ فَضْلِكَ قُمْ بِالضَّغْطِ عَلَى الزَّرِّ فِي أَعْلَى الشَّاشَةِ عَلَى اليَمِينِ. مِنْ فَضْلِكَ قُمْ بِالإِخْتِيَارِ: ١ - إِذَا كُنْتَ تُرِيدُ التَّعَرُّفَ عَلَى اللَّوْنِ، ٢ - إِذَا كُنْتَ تُرِيدُ استِخْرَاجَ النَّصِّ مِنَ الصُّورَةِ، ٣ - إِذَا كُنْتَ تُرِيدُ وَصْفَ الصُّورَةِ، ٤ - إِذَا كُنْتَ تُرِيدُ إِعَادَةَ هَذِهِ التَّعْلِيمَاتِ مَرَّةً أُخْرَى.",
+    //   'en':
+    //       "you are using the english language now , if you want to change the language please press the button that is located on the right top of the screen , Please select an option: 1 for color recognition, 2 for text extraction , 3 for Image Caption, 4 if you want me to repeat"
+    // }, (widget.lang1 == true) ? 1 : 0);
   }
 
   Future<void> _speakOptions(option, lan) async {
@@ -111,10 +134,14 @@ class _DetailsScreenState extends State<DetailsScreen> {
       await flutterTts.setPitch(1.0);
       await flutterTts.speak(option['en']);
     } else {
-      await flutterTts.setLanguage('ar-AR');
+      // ar-SA
+      await flutterTts.setLanguage('ar-SU');
+      // Set the voice identifier for the desired Arabic voice
+
+      // await flutterTts.setLanguage('ar-AR');
       await flutterTts
           .setSpeechRate(0.25); // Set the speech rate (adjust as needed)
-      await flutterTts.setPitch(1.0);
+      await flutterTts.setPitch(0.8);
       await flutterTts.speak(option['ar']);
     }
 
@@ -153,27 +180,61 @@ class _DetailsScreenState extends State<DetailsScreen> {
       "simply point your device's camera at banknotes, and it  will identify the currency denomination."
     ];
     List<dynamic> dataimage = [
+      // Lottie.asset(
+      //   "lib/assest/Animation/color3.json",
+      //   width: 150,
+      //   height: 150,
+      //   repeat: true,
+      // ),
+      // color5
+      Image.asset(
+        'lib/assest/Animation/color5.gif',
+        width: (ScreenUtil().orientation == Orientation.landscape)
+            ? 150.w
+            : 280.w, // Optional: Set the width
+        height: (ScreenUtil().orientation == Orientation.landscape)
+            ? 90.h
+            : 150.h, // Optional: Set the height
+      ),
+      // Text3 , text13
       Lottie.asset(
-        "lib/assest/Animation/color3.json",
-        width: 150,
-        height: 150,
+        "lib/assest/Animation/text13.json",
+        width:
+            (ScreenUtil().orientation == Orientation.landscape) ? 400.w : 400.w,
+        height:
+            (ScreenUtil().orientation == Orientation.landscape) ? 90.h : 150.h,
         repeat: true,
       ),
-      Image.asset(
-        'lib/assest/Animation/text2.gif',
-        width: 200, // Optional: Set the width
-        height: 200, // Optional: Set the height
-      ),
+      // Image.asset(
+      //   'lib/assest/Animation/text2.gif',
+      //   width: 300, // Optional: Set the width
+      //   height: 150, // Optional: Set the height
+      // ),
       // SvgPicture.asset(
       //   'lib/assest/Animation/search1.svg',
       //   width: 200, // Optional: Set the width
       //   height: 200, // Optional: Set the height
       // ),
-      Image.asset(
-        'lib/assest/Animation/image2.gif',
-        width: 200, // Optional: Set the width
-        height: 200, // Optional: Set the height
+      // image2
+      Lottie.asset(
+        "lib/assest/Animation/image5.json",
+        width:
+            (ScreenUtil().orientation == Orientation.landscape) ? 200.w : 180.w,
+        height:
+            (ScreenUtil().orientation == Orientation.landscape) ? 90.h : 150.h,
       ),
+      Lottie.asset(
+        "lib/assest/Animation/game3.json",
+        width:
+            (ScreenUtil().orientation == Orientation.landscape) ? 200.w : 180.w,
+        height:
+            (ScreenUtil().orientation == Orientation.landscape) ? 90.h : 150.h,
+      ),
+      // Image.asset(
+      //   'lib/assest/Animation/presentation.png',
+      //   width: 300, // Optional: Set the width
+      //   height: 150, // Optional: Set the height
+      // ),
       // "lib/assest/Animation/text1.json",
       // "lib/assest/Animation/image.json",
       // "lib/assest/color1.jpg",
@@ -199,144 +260,193 @@ class _DetailsScreenState extends State<DetailsScreen> {
         //           : false)
         // ];
         return Scaffold(
-          appBar: AppBar(
-            title: Text(
-              'Auraspeak Innovator',
-              style: GoogleFonts.nunito(
-                fontSize: 25,
-                color: Color.fromRGBO(7, 7, 7, 1),
-                fontWeight: FontWeight.bold,
+            appBar: AppBar(
+              title: Text(
+                'Auraspeak Innovator',
+                style: GoogleFonts.nunito(
+                  fontSize: (ScreenUtil().orientation == Orientation.landscape)
+                      ? 15.sp
+                      : 22.sp,
+                  color: Color.fromRGBO(7, 7, 7, 1),
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-            backgroundColor: color,
-            actions: [
-              IconButton(
-                  onPressed: () async {
-                    // if (widget.def1!) {
-                    //   widget.def1 = false;
-                    //   changeLocaleProvider.setLocale(Locale('ar', 'AR'));
-                    //   //   setState(() {});
-                    // } else {
-                    //   widget.def1 = true;
-                    //   changeLocaleProvider.setLocale(Locale('en', 'EN'));
-                    //   // setState(() {});
-                    // }
-                    await flutterTts.stop();
-                    var ff = 1;
-                    print("the languageeeeeeeeee");
-                    print(BlocProvider.of<LanguageCubit>(context).language1);
+              backgroundColor: color,
+              actions: [
+                IconButton(
+                    onPressed: () async {
+                      // if (widget.def1!) {
+                      //   widget.def1 = false;
+                      //   changeLocaleProvider.setLocale(Locale('ar', 'AR'));
+                      //   //   setState(() {});
+                      // } else {
+                      //   widget.def1 = true;
+                      //   changeLocaleProvider.setLocale(Locale('en', 'EN'));
+                      //   // setState(() {});
+                      // }
+                      await flutterTts.stop();
+                      var ff = 1;
+                      print("the languageeeeeeeeee");
+                      print(BlocProvider.of<LanguageCubit>(context).language1);
 
-                    if (BlocProvider.of<LanguageCubit>(context).language1 ==
-                        'en') {
-                      widget.lang1 = false;
-                      ff = 0;
-                      BlocProvider.of<LanguageCubit>(context).getLanguage('ar');
+                      if (BlocProvider.of<LanguageCubit>(context).language1 ==
+                          'en') {
+                        widget.lang1 = false;
+                        ff = 0;
+                        BlocProvider.of<LanguageCubit>(context)
+                            .getLanguage('ar');
+                      } else {
+                        ff = 1;
+                        widget.lang1 = true;
+                        BlocProvider.of<LanguageCubit>(context)
+                            .getLanguage('en');
+                      }
+                      f = 0;
+                      print(BlocProvider.of<LanguageCubit>(context).language1);
+                      print("in the call");
+                      _speakOptions({
+                        'ar':
+                            "أَنْتَ الآنَ تَسْتَخْدِمُ اللُّغَةَ العَرَبِيَّةَ. إِذَا كُنْتَ تُرِيدُ تَغْيِيرَ اللُّغَةِ، مِنْ فَضْلِكَ قُمْ بِالضَّغْطِ عَلَى الزَّر فِي أَعْلَى الشَّاشَةِ عَلَى اليَمِينِ. اذا كنت تريد مني اخبارك بالتعليمات من فضلك قم بإختيار رقم 4.",
+                        'en':
+                            "you are using the english language now , if you want to change the language please press the button that is located on the right top of the screen , Please select option 4 if you want me to tell you the instructions"
+                      }, (ff == 1) ? 1 : 0);
+                    },
+                    icon: Icon(
+                      Icons.language,
+                      size: (ScreenUtil().orientation == Orientation.landscape)
+                          ? 18.sp
+                          : 28.sp,
+                    ))
+              ],
+              leading: InkWell(
+                  onTap: () async {
+                    print(voice);
+                    if (voice) {
+                      await flutterTts.stop();
+                      flutterTts.setVolume(0);
+                      voice = false;
+                      setState(() {});
                     } else {
-                      ff = 1;
-                      widget.lang1 = true;
-                      BlocProvider.of<LanguageCubit>(context).getLanguage('en');
+                      voice = true;
+                      flutterTts.setVolume(1);
+                      setState(() {});
                     }
-                    f = 0;
-                    print(BlocProvider.of<LanguageCubit>(context).language1);
-                    print("in the call");
-                    _speakOptions({
-                      'ar':
-                          "  ,انت الان تستخدم اللغة العربية , إذا كنت تريد تغيير اللغة من فضلك قم بالضغط على الزر في أعلى الشاشة على اليمين , من فضلك قم بالإختيار , 1 اذا كنت تريد التعرف على اللون , 2 اذا كنت تريد استخراج النص من الصورة , 3 اذا كنت تريد وصف الصورة , 4 اذا كنت تريد اعادة هذه التعليمات مرة أخرى",
-                      'en':
-                          "you are using the english language now , if you want to change the language please press the button that is located on the right top of the screen , Please select an option: 1 for color recognition, 2 for text extraction , 3 for Image Caption, 4 if you want me to repeat"
-                    }, (ff == 1) ? 1 : 0);
+                    // Set volume to 0 to mute the voice
                   },
-                  icon: Icon(Icons.language))
-            ],
-            leading: InkWell(
-                onTap: () async {
-                  await flutterTts.stop();
-                },
-                child: Icon(Icons.voice_over_off)
-                //  Lottie.asset(
-                //   'lib/assest/Animation/stop4.json',
-                //   width: 200,
-                //   height: 200,
-                //   repeat: true,
-                // ),
-                ),
+                  child: (voice
+                      ? Icon(
+                          Icons.record_voice_over,
+                          color: Color(0xFF6b5ba0),
+                          weight: 0.8,
+                          size: (ScreenUtil().orientation ==
+                                  Orientation.landscape)
+                              ? 18.sp
+                              : 28.sp,
+                        )
+                      : Icon(
+                          Icons.voice_over_off,
+                          color: Color(0xFF6b5ba0),
+                          weight: 0.8,
+                          size: (ScreenUtil().orientation ==
+                                  Orientation.landscape)
+                              ? 18.sp
+                              : 28.sp,
+                        ))
+                  //  Lottie.asset(
+                  //   'lib/assest/Animation/stop4.json',
+                  //   width: 200,
+                  //   height: 200,
+                  //   repeat: true,
+                  // ),
+                  ),
 
-            //  Padding(
-            //   padding: const EdgeInsets.all(8.0),
-            //   child: Container(
-            //     decoration: BoxDecoration(
-            //       color: Color(0xFF6b5ba0), // Color(0xFF5164BF),
-            //       borderRadius: BorderRadius.circular(15),
-            //     ),
-            //     child:
-            //      IconButton(
-            //       icon: Icon(Icons.arrow_back),
-            //       iconSize: 25,
-            //       color: Colors.white,
-            //       onPressed: () {
-            //         // Add your custom logic for handling the back button press
-            //         // You can use Navigator.pop(context) to pop the current screen
-            //         print('Back button pressed');
-            //       },
-            //     ),
-            //   ),
-            // ),
-          ),
-          body: SingleChildScrollView(
-            child: Column(
-              children: [
-                Image.asset(
-                  "lib/assest/1 (6).png",
-                  fit: BoxFit.cover,
-                  color: Color(0xFF6b5ba0),
-                ),
-                SizedBox(
-                  height: 18,
-                ),
-                // expandeddddddddddddddddddddddddddddd
-                SingleChildScrollView(
-                  child: Column(children: [
-                    for (var i = 0; i < dataimage.length!; i++)
-                      InkWell(
-                        onTap: () async {
-                          await flutterTts.stop();
-
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                // Testscreen(def: widget.def1)
-                                builder: (context) => DefaultScreen(
-                                      lang: (BlocProvider.of<LanguageCubit>(
-                                                      context)
-                                                  .language1 ==
-                                              'en')
-                                          ? true
-                                          : false,
-                                      title: {
-                                        'en': localizedStrings['en']!['title']
-                                            [i],
-                                        'ar': localizedStrings['ar']!['title']
-                                            [i]
-                                      },
-                                    )),
-                          );
-                        },
-                        child: MouseRegion(
-                          onEnter: (PointerEnterEvent event) {
-                            setState(() {
-                              isHovering = true;
-                            });
-                          },
-                          onExit: (PointerExitEvent event) {
-                            setState(() {
-                              isHovering = false;
-                            });
+              //  Padding(
+              //   padding: const EdgeInsets.all(8.0),
+              //   child: Container(
+              //     decoration: BoxDecoration(
+              //       color: Color(0xFF6b5ba0), // Color(0xFF5164BF),
+              //       borderRadius: BorderRadius.circular(15),
+              //     ),
+              //     child:
+              //      IconButton(
+              //       icon: Icon(Icons.arrow_back),
+              //       iconSize: 25,
+              //       color: Colors.white,
+              //       onPressed: () {
+              //         // Add your custom logic for handling the back button press
+              //         // You can use Navigator.pop(context) to pop the current screen
+              //         print('Back button pressed');
+              //       },
+              //     ),
+              //   ),
+              // ),
+            ),
+            body: Column(children: [
+              Image.asset(
+                "lib/assest/1 (6).png",
+                fit: BoxFit.cover,
+                color: Color(0xFF6b5ba0),
+              ),
+              SizedBox(
+                height: (ScreenUtil().orientation == Orientation.landscape)
+                    ? 10.h
+                    : 12.h,
+              ),
+              Expanded(
+                child: GridView.count(
+                    crossAxisCount: ScreenUtil().screenWidth > 600 &&
+                            ScreenUtil().orientation == Orientation.landscape
+                        ? 2
+                        : 1,
+                    crossAxisSpacing: ScreenUtil().screenWidth * 0.04,
+                    mainAxisSpacing: ScreenUtil().screenWidth * 0.02,
+                    childAspectRatio:
+                        (ScreenUtil().orientation == Orientation.landscape)
+                            ? (0.9).sp
+                            : (1.3).sp,
+                    children: [
+                      for (var i = 0; i < 3; i++) // dataimage.length
+                        InkWell(
+                          onTap: () async {
+                            await flutterTts.stop();
+                            _speakOptions(
+                                {
+                                  'en':
+                                      'you choose the ${localizedStrings['en']!['title'][i]}',
+                                  'ar':
+                                      ' لقد قمت بإختيار ${localizedStrings['ar']!['title'][i]} '
+                                },
+                                (BlocProvider.of<LanguageCubit>(context)
+                                            .language1 ==
+                                        'en')
+                                    ? 1
+                                    : 0);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  // Testscreen(def: widget.def1)
+                                  builder: (context) => DefaultScreen(
+                                        lang: (BlocProvider.of<LanguageCubit>(
+                                                        context)
+                                                    .language1 ==
+                                                'en')
+                                            ? true
+                                            : false,
+                                        title: {
+                                          'en': localizedStrings['en']!['title']
+                                              [i],
+                                          'ar': localizedStrings['ar']!['title']
+                                              [i]
+                                        },
+                                        voice: voice,
+                                      )),
+                            );
                           },
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             // expandeddddddddddddddddddddddddddddd
                             child: Container(
-                              width: screenSize.width * 0.89,
+                              // height: ScreenUtil().screenHeight * 0.1,
                               // height: screenSize.height * 0.4,
                               decoration: BoxDecoration(
                                 border: Border.all(
@@ -347,107 +457,137 @@ class _DetailsScreenState extends State<DetailsScreen> {
                               ),
                               child: Column(children: [
                                 SizedBox(
-                                  height: 30,
+                                  height: 10.h,
                                 ),
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                Container(
-                                  height: 100,
-                                  width: 100,
-                                  child: dataimage[i],
-                                ),
-                                Text(
-                                  ' ${localizedStrings[BlocProvider.of<LanguageCubit>(context).language1]!['title'][i]}',
-                                  style: GoogleFonts.nunito(
-                                    fontSize: 19.0,
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.w500,
+                                dataimage[i],
+                                // Container(
+                                //   height: 150,
+                                //   width: 150,
+                                //   child: dataimage[i],
+                                // ),
+
+                                Padding(
+                                  padding: EdgeInsets.all(8.sp),
+                                  child: Text(
+                                    ' ${localizedStrings[BlocProvider.of<LanguageCubit>(context).language1]!['title'][i]}',
+                                    style: GoogleFonts.nunito(
+                                      fontSize: (ScreenUtil().orientation ==
+                                              Orientation.landscape)
+                                          ? 11.sp
+                                          : 18.sp,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 )
                               ]),
                             ),
                           ),
-                          // child: CardCamera(
-                          //   Images: dataimage[i],
+                        ),
+                      InkWell(
+                        onTap: () async {
+                          await flutterTts.stop();
+                          _speakOptions(
+                              {
+                                'en':
+                                    'you choose the ${localizedStrings['en']!['title'][3]}',
+                                'ar':
+                                    ' لقد قمت بإختيار ${localizedStrings['ar']!['title'][3]} '
+                              },
+                              (BlocProvider.of<LanguageCubit>(context)
+                                          .language1 ==
+                                      'en')
+                                  ? 1
+                                  : 0);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                // Testscreen(def: widget.def1)
+                                builder: (context) => GameOptionsScreen(
+                                      lang: BlocProvider.of<LanguageCubit>(
+                                              context)
+                                          .language1,
+                                    )),
+                          );
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          // expandeddddddddddddddddddddddddddddd
+                          child: Container(
+                            // height: ScreenUtil().screenHeight * 0.1,
+                            // height: screenSize.height * 0.4,
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                  color: Color(0xFF6b5ba0), width: 1.0),
+                              color: Color.fromARGB(255, 250, 242, 237),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(12)),
+                            ),
+                            child: Column(children: [
+                              SizedBox(
+                                height: 10.h,
+                              ),
+                              dataimage[3],
+                              // Container(
+                              //   height: 150,
+                              //   width: 150,
+                              //   child: dataimage[i],
+                              // ),
 
-                          //   TestName: localizedStrings[
-                          //       BlocProvider.of<LanguageCubit>(context)
-                          //           .language1]!['title'][i], //datacolor[i],
-                          //   brief: databreif[i],
-                          //   path: p[i],
-                          // ),
+                              Padding(
+                                padding: EdgeInsets.all(8.sp),
+                                child: Text(
+                                  ' ${localizedStrings[BlocProvider.of<LanguageCubit>(context).language1]!['title'][3]}',
+                                  style: GoogleFonts.nunito(
+                                    fontSize: (ScreenUtil().orientation ==
+                                            Orientation.landscape)
+                                        ? 11.sp
+                                        : 18.sp,
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              )
+                            ]),
+                          ),
                         ),
                       )
-                  ]),
-                )
-                // Expanded(
-                //   child: ListView.builder(
-                //     itemCount: 2, // Replace with your actual item count
-                //     itemBuilder: (context, index) {
-                //       // Replace with your list item widget
-                //       return InkWell(
-                //         onTap: () {
-                //           Navigator.push(
-                //             context,
-                //             MaterialPageRoute(builder: (context) => DetailsScreen()),
-                //           );
-                //         },
-                //         child: CardCategory(
-                //           Images: dataimage[index],
-                //           TestName: datacolor[index],
-                //           brief: databreif[index],
-                //           path: p[index],
-                //         ),
-                //       );
-                //     },
-                //   ),
-                // ),
-                ,
-                Row(
-                  // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      width: 100,
-                      height: 100,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.only(
-                            bottomRight: Radius.circular(12.0),
-                            topRight: Radius.circular(12.0)),
-                        child: Image.asset(
-                          "lib/assest/1 (1).png",
-                          fit: BoxFit.cover,
-                        ),
-                      ),
+                    ]),
+              ),
+            ]),
+            floatingActionButton: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  width: (ScreenUtil().orientation == Orientation.landscape)
+                      ? 40.w
+                      : 90.w,
+                  height: (ScreenUtil().orientation == Orientation.landscape)
+                      ? 90.h
+                      : 80.h,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.only(
+                        bottomRight: Radius.circular(12.0),
+                        topRight: Radius.circular(12.0)),
+                    child: Image.asset(
+                      "lib/assest/1 (1).png",
+                      fit: BoxFit.cover,
                     ),
-                    Container(
-                      width: 120,
-                      height: 120,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.only(
-                            bottomRight: Radius.circular(12.0),
-                            topRight: Radius.circular(12.0)),
-                        child: Image.asset(
-                          "lib/assest/1 (4).png",
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                  ],
-                )
+                  ),
+                ),
+                BlocProvider(
+                  create: (context) =>
+                      SpeechRecognitionCubit()..initializeSpeech(),
+                  child: Speech(
+                    language:
+                        (BlocProvider.of<LanguageCubit>(context).language1 ==
+                                'en')
+                            ? true
+                            : false,
+                  ),
+                ),
               ],
-            ),
-          ),
-          floatingActionButton: BlocProvider(
-            create: (context) => SpeechRecognitionCubit()..initializeSpeech(),
-            child: Speech(
-              language:
-                  (BlocProvider.of<LanguageCubit>(context).language1 == 'en')
-                      ? true
-                      : false,
-            ),
-          ),
-        );
+            ));
       },
       listener: (context, state) {},
     );
@@ -486,7 +626,7 @@ class Speech extends StatelessWidget {
       await flutterTts.setLanguage('ar-AR');
       await flutterTts
           .setSpeechRate(0.25); // Set the speech rate (adjust as needed)
-      await flutterTts.setPitch(1.0);
+      await flutterTts.setPitch(0.8);
       await flutterTts.speak(option['ar']);
     }
   }
@@ -570,6 +710,7 @@ class Speech extends StatelessWidget {
                               'en': localizedStrings['en']!['title'][0],
                               'ar': localizedStrings['ar']!['title'][0]
                             },
+                            voice: voice,
                           )),
                 );
               } else if (number == 2) {
@@ -582,6 +723,7 @@ class Speech extends StatelessWidget {
                   MaterialPageRoute(
                       // Testscreen(def: widget.def1)
                       builder: (context) => DefaultScreen(
+                            voice: voice,
                             lang: (BlocProvider.of<LanguageCubit>(context)
                                         .language1 ==
                                     'en')
@@ -603,6 +745,7 @@ class Speech extends StatelessWidget {
                   MaterialPageRoute(
                       // Testscreen(def: widget.def1)
                       builder: (context) => DefaultScreen(
+                            voice: voice,
                             lang: (BlocProvider.of<LanguageCubit>(context)
                                         .language1 ==
                                     'en')

@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:grd_projecttt/Screens/Choices.dart';
+import 'package:grd_projecttt/Game/Choices.dart';
 import 'package:grd_projecttt/Screens/details_screen.dart';
-import 'package:grd_projecttt/Screens/color_matching_screen.dart';
-import 'package:grd_projecttt/Screens/math_game_screen.dart';
+import 'package:grd_projecttt/Game/color_matching_screen.dart';
+import 'package:grd_projecttt/Game/math_game_screen.dart';
 import 'package:grd_projecttt/Screens/memory_game_screen.dart';
 import 'package:lottie/lottie.dart';
 

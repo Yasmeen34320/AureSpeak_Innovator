@@ -11,7 +11,7 @@ import 'package:grd_projecttt/Cubits/speech_cubit/speech_cubit.dart';
 import 'package:grd_projecttt/Cubits/speech_cubit/speech_state.dart';
 import 'package:grd_projecttt/Screens/deetails_games.dart';
 import 'package:grd_projecttt/Screens/default_screen.dart';
-import 'package:grd_projecttt/Screens/math_game_screen.dart';
+import 'package:grd_projecttt/Game/math_game_screen.dart';
 import 'package:string_similarity/string_similarity.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';

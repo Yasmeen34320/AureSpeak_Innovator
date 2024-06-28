@@ -10,15 +10,15 @@ import 'package:grd_projecttt/Screens/details_screen.dart';
 import 'package:grd_projecttt/Shared/info_card.dart';
 import 'package:grd_projecttt/Game/game_utils.dart';
 
-class HomeScreen extends StatefulWidget {
+class MemoryGameScreen extends StatefulWidget {
   final String? lang1;
-  HomeScreen({super.key, required this.lang1});
+  MemoryGameScreen({super.key, required this.lang1});
 
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  _MemoryGameScreenState createState() => _MemoryGameScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _MemoryGameScreenState extends State<MemoryGameScreen> {
   TextStyle whiteText = TextStyle(color: Colors.white);
   Game _game = Game();
   int tries = 0;
@@ -176,10 +176,6 @@ class _HomeScreenState extends State<HomeScreen> {
                               }
                               _game.matchCheck.clear();
                             });
-                            if (_game.cards_list.every(
-                                (element) => element == _game.hiddenCardpath)) {
-                              handleGameFinished();
-                            }
                           } else {
                             Future.delayed(Duration(milliseconds: 500), () {
                               setState(() {

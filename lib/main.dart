@@ -11,7 +11,7 @@ import 'package:grd_projecttt/Screens/deetails_games.dart';
 import 'package:grd_projecttt/Screens/details_screen.dart';
 import 'package:grd_projecttt/Game/color_matching_screen.dart';
 import 'package:grd_projecttt/Game/math_game_screen.dart';
-import 'package:grd_projecttt/Screens/memory_game_screen.dart';
+import 'package:grd_projecttt/Game/memory_game_screen.dart';
 import 'package:grd_projecttt/Screens/test_sound.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';

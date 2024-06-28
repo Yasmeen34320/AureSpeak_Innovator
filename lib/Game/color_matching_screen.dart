@@ -8,14 +8,14 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:grd_projecttt/Screens/details_screen.dart';
 
-class GameScreen extends StatefulWidget {
+class ColorMatchingScreen extends StatefulWidget {
   final String lang1;
-  GameScreen({super.key, required this.lang1});
+  ColorMatchingScreen({super.key, required this.lang1});
   @override
-  _GameScreenState createState() => _GameScreenState();
+  _ColorMatchingScreenState createState() => _ColorMatchingScreenState();
 }
 
-class _GameScreenState extends State<GameScreen> {
+class _ColorMatchingScreenState extends State<ColorMatchingScreen> {
   final FlutterTts flutterTts = FlutterTts();
   final AudioPlayer _player = AudioPlayer();
   final Random random = Random();

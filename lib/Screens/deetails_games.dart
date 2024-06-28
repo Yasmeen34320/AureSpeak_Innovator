@@ -7,7 +7,7 @@ import 'package:grd_projecttt/Game/Choices.dart';
 import 'package:grd_projecttt/Screens/details_screen.dart';
 import 'package:grd_projecttt/Game/color_matching_screen.dart';
 import 'package:grd_projecttt/Game/math_game_screen.dart';
-import 'package:grd_projecttt/Screens/memory_game_screen.dart';
+import 'package:grd_projecttt/Game/memory_game_screen.dart';
 import 'package:lottie/lottie.dart';
 
 List<dynamic> dataimage = [
@@ -146,13 +146,13 @@ class GameOptionTile extends StatelessWidget {
       MathGameScreen(
         lang1: lang,
       ),
-      GameScreen(
+      ColorMatchingScreen(
         lang1: lang,
       ),
-      HomeScreen(
+      MemoryGameScreen(
         lang1: lang,
       ),
-      Level1(
+      ChoicesScreen(
         lang1: lang,
       )
     ];

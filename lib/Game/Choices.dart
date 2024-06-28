@@ -8,14 +8,14 @@ import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:animated_background/animated_background.dart';
 import 'package:auto_orientation/auto_orientation.dart';
 
-class Level1 extends StatefulWidget {
+class ChoicesScreen extends StatefulWidget {
   final String? lang1;
-  Level1({super.key, required this.lang1});
+  ChoicesScreen({super.key, required this.lang1});
   @override
-  _Level1State createState() => _Level1State();
+  _ChoicesScreenState createState() => _ChoicesScreenState();
 }
 
-class _Level1State extends State<Level1>
+class _ChoicesScreenState extends State<ChoicesScreen>
     with WidgetsBindingObserver, SingleTickerProviderStateMixin
     implements TickerProvider {
   int index = 0;
@@ -162,100 +162,93 @@ class _Level1State extends State<Level1>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.amber,
-      body: AnimatedBackground(
-        behaviour: RandomParticleBehaviour(),
-        vsync: this,
-        child: Center(
-          child: Container(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Text(
-                      'Score:$score',
-                      style:
-                          TextStyle(fontWeight: FontWeight.w700, fontSize: 24),
-                    ),
-                    Text(
-                      'Choose The Correct Answer',
-                      style:
-                          TextStyle(fontSize: 36, fontWeight: FontWeight.w300),
-                    ),
-                    GestureDetector(
-                      child: Container(
-                          height: 60,
-                          child: Image(image: AssetImage('lib/assest/x.png'))),
-                      onTap: () {
-                        Navigator.of(context).pop();
+      body: Center(
+        child: Container(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Text(
+                    'Score:$score',
+                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 24),
+                  ),
+                  Text(
+                    'Choose The Correct Answer',
+                    style: TextStyle(fontSize: 36, fontWeight: FontWeight.w300),
+                  ),
+                  GestureDetector(
+                    child: Container(
+                        height: 60,
+                        child: Image(image: AssetImage('lib/assest/x.png'))),
+                    onTap: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircleAvatar(
+                    child: Image(
+                        image: AssetImage(questions[index]['image'] as String)),
+                    radius: 110,
+                    backgroundColor: Colors.white,
+                  ),
+                ],
+              ),
+              SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ...(questions[index]['answers'] as List<String>)
+                      .map((answer) {
+                    return ElevatedButton(
+                      onPressed: () {
+                        if (answer == questions[index]['correct']) {
+                          // player.play('win.mp3');
+                          // Alert(
+                          //   context: context,
+                          //   title: "Well Done",
+                          //   desc: "You have moved to the next level.",
+                          // ).show();
+                          print('correct');
+                          setState(() {
+                            _speak('Correct');
+                            print('$index ${correct.length}');
+                            if (index < correct.length - 1)
+                              index++;
+                            else
+                              Navigator.of(context).pop();
+
+                            score += 10;
+                          });
+                        } else {
+                          _speak('Try again!');
+
+                          // player.play('fail.mp3');
+                        }
                       },
-                    ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CircleAvatar(
-                      child: Image(
-                          image:
-                              AssetImage(questions[index]['image'] as String)),
-                      radius: 110,
-                      backgroundColor: Colors.white,
-                    ),
-                  ],
-                ),
-                SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    ...(questions[index]['answers'] as List<String>)
-                        .map((answer) {
-                      return ElevatedButton(
-                        onPressed: () {
-                          if (answer == questions[index]['correct']) {
-                            // player.play('win.mp3');
-                            // Alert(
-                            //   context: context,
-                            //   title: "Well Done",
-                            //   desc: "You have moved to the next level.",
-                            // ).show();
-                            print('correct');
-                            setState(() {
-                              _speak('Well Done');
-                              print('$index ${correct.length}');
-                              if (index < correct.length - 1)
-                                index++;
-                              else
-                                Navigator.of(context).pop();
-
-                              score += 10;
-                            });
-                          } else {
-                            _speak('Try again!');
-
-                            // player.play('fail.mp3');
-                          }
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            answer,
-                            style: TextStyle(fontSize: 18, color: Colors.black),
-                          ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          answer,
+                          style: TextStyle(fontSize: 18, color: Colors.black),
                         ),
-                        // color: Colors.white,
-                        // shape: RoundedRectangleBorder(
-                        //   borderRadius: BorderRadius.circular(10.0),
-                        // ),
-                        // splashColor: Colors.black26,
-                        // focusColor: Colors.green,
-                      );
-                    }).toList(),
-                  ],
-                ),
-              ],
-            ),
+                      ),
+                      // color: Colors.white,
+                      // shape: RoundedRectangleBorder(
+                      //   borderRadius: BorderRadius.circular(10.0),
+                      // ),
+                      // splashColor: Colors.black26,
+                      // focusColor: Colors.green,
+                    );
+                  }).toList(),
+                ],
+              ),
+            ],
           ),
         ),
       ),

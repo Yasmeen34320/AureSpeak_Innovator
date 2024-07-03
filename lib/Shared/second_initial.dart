@@ -69,7 +69,7 @@ class _SecondInitialState extends State<SecondInitial> {
                       : 200.w,
                   child: Image.file(
                     widget.file ?? File('temp_image.png'),
-                    fit: BoxFit.cover,
+                    fit: BoxFit.contain,
                   ),
                 ),
                 SizedBox(

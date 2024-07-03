@@ -18,11 +18,12 @@ import 'package:lottie/lottie.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:string_similarity/string_similarity.dart';
 
-String data = "null";
+String? data = null;
 //final translator = GoogleTranslator();
 
 FlutterTts flutterTts = FlutterTts();
 String textToSpeak = "";
+String? text_language = null;
 
 class DefaultScreen extends StatefulWidget {
   final bool? lang;
@@ -119,7 +120,8 @@ class _DefaultScreenState extends State<DefaultScreen> {
           });
         else if (state is DefaultSuccessState) {
           data = state.data;
-
+          if (widget.title['en'] == 'Text Extraction')
+            text_language = state.lang;
           _speakOptions({
             'en':
                 'successfully predict the photo please select  6 for the speech  ',
@@ -134,7 +136,7 @@ class _DefaultScreenState extends State<DefaultScreen> {
               // appLocalizations(context).title,
               style: GoogleFonts.nunito(
                 fontSize: (ScreenUtil().orientation == Orientation.landscape)
-                    ? 14.sp
+                    ? 13.sp
                     : 22.sp,
                 color: Color.fromRGBO(7, 7, 7, 1),
                 fontWeight: FontWeight.bold,
@@ -220,7 +222,7 @@ class _DefaultScreenState extends State<DefaultScreen> {
                     file = null;
                     // flag = false;
                     // flg1 = false;
-                    print("herrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrre" + data);
+                    print("herrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrre" + data!);
                     await flutterTts.stop();
                     //    setState(() {});
                     _defaultCubit.data = null;
@@ -282,7 +284,7 @@ class _DefaultScreenState extends State<DefaultScreen> {
                     children: [
                       Center(
                         child: Text(
-                          ('The prediction is : $data'),
+                          ('The prediction is : ${data!}'),
                           style: GoogleFonts.nunito(
                             fontSize: (ScreenUtil().orientation ==
                                     Orientation.landscape)
@@ -430,7 +432,7 @@ class _DefaultScreenState extends State<DefaultScreen> {
               func1: () => _defaultCubit.getCaption(file!, ('en')),
               func3: () => _defaultCubit.getColors(file!, ('en')),
               func4: () => _defaultCubit.getText(file!, ('en')),
-              func2: () => _defaultCubit.displayText(data),
+              func2: () => _defaultCubit.displayText(data!),
               language: (widget.lang!) ? true : false,
               statee: _defaultCubit.state,
             ),
@@ -442,11 +444,14 @@ class _DefaultScreenState extends State<DefaultScreen> {
 }
 
 Future<void> speakText() async {
-  await flutterTts.setLanguage('en-US');
+  if (text_language == 'ar')
+    await flutterTts.setLanguage('ar-AR');
+  else
+    await flutterTts.setLanguage('en-US');
 
   await flutterTts.setSpeechRate(0.25);
   await flutterTts.setPitch(1.0); // Set the pitch (adjust as needed)
-  await flutterTts.speak(data);
+  await flutterTts.speak(data!);
 }
 
 class Speech extends StatelessWidget {
@@ -514,7 +519,8 @@ class Speech extends StatelessWidget {
                       word == "واحد" ||
                       word == "احد" ||
                       word == "واهد" ||
-                      word == "وان") {
+                      word == "وان" ||
+                      StringSimilarity.compareTwoStrings(word, "واحد") >= 0.5) {
                     number = 1;
                     break;
                   } else if (word == "اثنان" ||
@@ -526,10 +532,15 @@ class Speech extends StatelessWidget {
                       word == 'two' ||
                       word == '2' ||
                       word == 'to' ||
-                      word == 'too') {
+                      word == 'too' ||
+                      StringSimilarity.compareTwoStrings(word, "اثنان") >=
+                          0.5) {
                     number = 2;
                     break;
-                  } else if (word == "اربعة" ||
+                  } else if (StringSimilarity.compareTwoStrings(
+                              word, "اربعة") >=
+                          0.5 ||
+                      word == "اربعة" ||
                       word == "فور" ||
                       word == "اربع" ||
                       word == 'four' ||
@@ -546,7 +557,9 @@ class Speech extends StatelessWidget {
                       word == 'tree' ||
                       word == 'thre' ||
                       word == '3' ||
-                      word == 'sree') {
+                      word == 'sree' ||
+                      StringSimilarity.compareTwoStrings(word, "ثلاثة") >=
+                          0.5) {
                     number = 3;
                     break;
                   } else if (word == "اربعة" ||
@@ -554,7 +567,9 @@ class Speech extends StatelessWidget {
                       word == "اربع" ||
                       word == 'four' ||
                       word == 'for' ||
-                      word == '4') {
+                      word == '4' ||
+                      StringSimilarity.compareTwoStrings(word, "اربعة") >=
+                          0.5) {
                     number = 4;
                     break;
                   } else if (word == 'five' ||
@@ -563,7 +578,8 @@ class Speech extends StatelessWidget {
                       word == 'vive' ||
                       word == "فايف" ||
                       word == "خمسة" ||
-                      word == "خمس") {
+                      word == "خمس" ||
+                      StringSimilarity.compareTwoStrings(word, "خمسة") >= 0.5) {
                     number = 5;
                     break;
                   } else if (word == "ستة" ||
@@ -573,7 +589,8 @@ class Speech extends StatelessWidget {
                       word == 'sick' ||
                       word == 'sex' ||
                       word == '6' ||
-                      word == 'sics') {
+                      word == 'sics' ||
+                      StringSimilarity.compareTwoStrings(word, "ستة") >= 0.5) {
                     number = 6;
                   }
                 }
@@ -688,6 +705,7 @@ class Speech extends StatelessWidget {
               number = -1;
               cubit.stopListening();
             } else {
+              number = -1;
               cubit.startListening(language!);
             }
           },

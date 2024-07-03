@@ -1,7 +1,7 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/services.dart';
-import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:grd_projecttt/Cubits/default_cubit/default_state.dart';
 import 'package:http/http.dart' as http;
 import 'package:mime/mime.dart';
@@ -155,8 +155,10 @@ class DefaultCubit extends Cubit<DefaultState> {
       var response = await request.send();
       print("${response.statusCode} fghfhfgh");
       if (response.statusCode == 200) {
-        data = await response.stream.bytesToString();
-
+        var responseData = await response.stream.bytesToString(); // data
+        var jsonResponse = jsonDecode(responseData);
+        var data = jsonResponse['extracted_text'];
+        var detectedLanguage = jsonResponse['detected_language'];
         // Remove the extra quotes
         String cleanedData = data!.replaceAll('"', '');
 
@@ -170,7 +172,7 @@ class DefaultCubit extends Cubit<DefaultState> {
         // data1 = translatedText.text;
         // print(data1);
         print('OCR Result: $data');
-        emit(DefaultSuccessState(data: data!));
+        emit(DefaultSuccessState(data: data!, lang: detectedLanguage));
       } else {
         emit(DefaultFailureState());
         print('Error cvcvcv: ${response.reasonPhrase}');

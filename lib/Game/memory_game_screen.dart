@@ -46,6 +46,8 @@ class _MemoryGameScreenState extends State<MemoryGameScreen> {
   Future<void> playCorrectSound() async {
     // Play a correct sound effect and speak "Correct" using TTS
     try {
+      await flutterTts.setLanguage('en-US');
+      await flutterTts.setSpeechRate(0.25);
       await flutterTts.setVolume(1.0); // Max volume
       await flutterTts.speak('Correct');
     } catch (e) {
@@ -170,6 +172,8 @@ class _MemoryGameScreenState extends State<MemoryGameScreen> {
                             setState(() async {
                               score += 100;
                               if (score == 400) {
+                                await flutterTts.setLanguage('en-US');
+                                await flutterTts.setSpeechRate(0.25);
                                 await flutterTts.setVolume(1.0); // Max volume
                                 await flutterTts.speak(
                                     'Well Done , you can play new game by reset');

@@ -45,7 +45,7 @@ class _IntroScreenState extends State<IntroScreen> {
       body:
           '''AuraSpeak Innovator provides descriptive captions for images, benefiting visually impaired individuals by enhancing their understanding of image content and serving as an educational tool for children.''',
       image: Center(
-        child: Lottie.asset('lib/assest/Animation/TEST1.json'),
+        child: Lottie.asset('lib/assest/Animation/TEST1.json'), // TEST1
       ),
     ),
   ];
@@ -73,12 +73,20 @@ class _IntroScreenState extends State<IntroScreen> {
     await flutterTts.speak(speechTexts[index]);
   }
 
+  void _onIntroEnd(context) {
+    // final prefs = await SharedPreferences.getInstance();
+    // await prefs.setBool('ON_BOARDING', false);
+    Navigator.pushReplacement(context,
+        MaterialPageRoute(builder: (context) => DetailsScreen(lang1: true)));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 24.0),
         child: IntroductionScreen(
+          onSkip: () => _onIntroEnd(context),
           pages: pages,
           dotsDecorator: const DotsDecorator(
             size: Size(10, 10),
@@ -112,9 +120,7 @@ class _IntroScreenState extends State<IntroScreen> {
     );
   }
 
-  void onDone(BuildContext context) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('ON_BOARDING', false);
+  void onDone(BuildContext context) {
     Navigator.pushReplacement(context,
         MaterialPageRoute(builder: (context) => DetailsScreen(lang1: true)));
   }

@@ -56,7 +56,7 @@ class GameOptionsScreen extends StatelessWidget {
       appBar: AppBar(
         title: Center(
           child: Text(
-            'Gaming Options',
+            (lang == 'en') ? 'Gaming Options' : 'الألعاب',
             style: GoogleFonts.nunito(
               fontSize: (ScreenUtil().orientation == Orientation.landscape)
                   ? 15.sp
@@ -101,14 +101,13 @@ class GameOptionsScreen extends StatelessWidget {
               color: Color(0xFF6b5ba0),
             ),
             SizedBox(
-              height: (ScreenUtil().orientation == Orientation.landscape)
-                  ? 0
-                  : 12.h,
+              height:
+                  (ScreenUtil().orientation == Orientation.landscape) ? 0 : 5.h,
             ),
             Padding(
               padding: EdgeInsets.all(8.0.w),
               child: Container(
-                height: 800.h,
+                height: 900.h,
                 child: GridView.builder(
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount:
@@ -180,7 +179,7 @@ class GameOptionTile extends StatelessWidget {
         child: Column(children: [
           SizedBox(
             height:
-                ((ScreenUtil().orientation == Orientation.landscape)) ? 10 : 10,
+                ((ScreenUtil().orientation == Orientation.landscape)) ? 5 : 5,
           ),
           // expandeddddddddddddddddddddddd
           dataimage[index],
@@ -197,7 +196,7 @@ class GameOptionTile extends StatelessWidget {
             style: GoogleFonts.nunito(
               fontSize: ((ScreenUtil().orientation == Orientation.landscape))
                   ? 9.sp
-                  : 18.sp,
+                  : 17.sp,
               color: Colors.black,
               fontWeight: FontWeight.w500,
             ),

@@ -13,7 +13,8 @@ class DefaultLoadingState extends DefaultState {}
 
 class DefaultSuccessState extends DefaultState {
   String data;
-  DefaultSuccessState({required this.data});
+  String? lang;
+  DefaultSuccessState({required this.data, this.lang});
 }
 
 class DefaultFailureState extends DefaultState {}

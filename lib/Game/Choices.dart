@@ -5,7 +5,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:grd_projecttt/Screens/deetails_games.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
-import 'package:animated_background/animated_background.dart';
 import 'package:auto_orientation/auto_orientation.dart';
 
 class ChoicesScreen extends StatefulWidget {
@@ -22,6 +21,8 @@ class _ChoicesScreenState extends State<ChoicesScreen>
   final FlutterTts flutterTts = FlutterTts();
   void _speak(String text) async {
     print('in the speak');
+    await flutterTts.setLanguage('en-US');
+    await flutterTts.setSpeechRate(0.25);
     await flutterTts.setVolume(1.0); // Max volume
     await flutterTts.speak(text);
   }
@@ -30,6 +31,7 @@ class _ChoicesScreenState extends State<ChoicesScreen>
   void initState() {
     questions.shuffle();
     super.initState();
+
     WidgetsBinding.instance.addObserver(this);
     AutoOrientation.landscapeAutoMode(); // Set the screen to landscape mode
   }
@@ -158,6 +160,11 @@ class _ChoicesScreenState extends State<ChoicesScreen>
     },
   ];
 
+  // Stop confetti after some time (adjust as needed)
+  // Future.delayed(Duration(seconds: 2), () {
+  //   _confettiController.stop();
+  // });
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -215,13 +222,15 @@ class _ChoicesScreenState extends State<ChoicesScreen>
                           //   desc: "You have moved to the next level.",
                           // ).show();
                           print('correct');
+                          _speak('Correct');
                           setState(() {
-                            _speak('Correct');
                             print('$index ${correct.length}');
                             if (index < correct.length - 1)
                               index++;
-                            else
+                            else {
+                              _speak('Well Done finishing the test');
                               Navigator.of(context).pop();
+                            }
 
                             score += 10;
                           });

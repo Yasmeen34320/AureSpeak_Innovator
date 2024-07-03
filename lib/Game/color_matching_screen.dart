@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_tts/flutter_tts.dart';
-import 'package:audioplayers/audioplayers.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:grd_projecttt/Screens/details_screen.dart';
 
@@ -17,7 +16,6 @@ class ColorMatchingScreen extends StatefulWidget {
 
 class _ColorMatchingScreenState extends State<ColorMatchingScreen> {
   final FlutterTts flutterTts = FlutterTts();
-  final AudioPlayer _player = AudioPlayer();
   final Random random = Random();
 
   late int index1;
@@ -47,7 +45,6 @@ class _ColorMatchingScreenState extends State<ColorMatchingScreen> {
     'Brown': Colors.brown,
     'Grey': Colors.grey,
     'Black': Colors.black,
-    'White': Colors.white,
     'Turquoise': Color(0xFF40E0D0),
     'Gold': Color(0xFFFFD700),
     'Silver': Color(0xFFC0C0C0),
@@ -76,13 +73,14 @@ class _ColorMatchingScreenState extends State<ColorMatchingScreen> {
   }
 
   void _speak(String text) async {
+    await flutterTts.setLanguage('en-US');
+    await flutterTts.setSpeechRate(0.25);
     await flutterTts.setVolume(1.0); // Max volume
     await flutterTts.speak(text);
   }
 
   @override
   void dispose() {
-    _player.dispose(); // Dispose the audio player
     super.dispose();
   }
 

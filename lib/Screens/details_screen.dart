@@ -12,6 +12,7 @@ import 'package:grd_projecttt/Cubits/speech_cubit/speech_state.dart';
 import 'package:grd_projecttt/Screens/deetails_games.dart';
 import 'package:grd_projecttt/Screens/default_screen.dart';
 import 'package:grd_projecttt/Game/math_game_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:string_similarity/string_similarity.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -54,7 +55,7 @@ Map<String, Map<dynamic, dynamic>> localizedStrings = {
       0: 'التعرف علي اللون',
       1: ' استخراج النص من الصورة',
       2: 'وصف الصورة ',
-      3: 'العاب',
+      3: 'الألعاب',
     },
     'title1': ' استخراج النص',
     'option': 'بإستخدام الكاميرا ',
@@ -113,6 +114,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
     super.initState();
     _speech.initialize();
     flutterTts.stop();
+    _saveAlreadySeen();
 
     f = 0;
     // _speakOptions({
@@ -121,6 +123,11 @@ class _DetailsScreenState extends State<DetailsScreen> {
     //   'en':
     //       "you are using the english language now , if you want to change the language please press the button that is located on the right top of the screen , Please select an option: 1 for color recognition, 2 for text extraction , 3 for Image Caption, 4 if you want me to repeat"
     // }, (widget.lang1 == true) ? 1 : 0);
+  }
+
+  Future<void> _saveAlreadySeen() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('ON_BORDING', false);
   }
 
   Future<void> _speakOptions(option, lan) async {
@@ -135,7 +142,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
       await flutterTts.speak(option['en']);
     } else {
       // ar-SA
-      await flutterTts.setLanguage('ar-SU');
+      await flutterTts.setLanguage('ar-EG');
       // Set the voice identifier for the desired Arabic voice
 
       // await flutterTts.setLanguage('ar-AR');
@@ -265,7 +272,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                 'Auraspeak Innovator',
                 style: GoogleFonts.nunito(
                   fontSize: (ScreenUtil().orientation == Orientation.landscape)
-                      ? 15.sp
+                      ? 13.sp
                       : 22.sp,
                   color: Color.fromRGBO(7, 7, 7, 1),
                   fontWeight: FontWeight.bold,
@@ -473,7 +480,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                     style: GoogleFonts.nunito(
                                       fontSize: (ScreenUtil().orientation ==
                                               Orientation.landscape)
-                                          ? 11.sp
+                                          ? 10.sp
                                           : 18.sp,
                                       color: Colors.black,
                                       fontWeight: FontWeight.bold,
@@ -541,7 +548,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                   style: GoogleFonts.nunito(
                                     fontSize: (ScreenUtil().orientation ==
                                             Orientation.landscape)
-                                        ? 11.sp
+                                        ? 10.sp
                                         : 18.sp,
                                     color: Colors.black,
                                     fontWeight: FontWeight.bold,
@@ -657,34 +664,55 @@ class Speech extends StatelessWidget {
                     word == '1' ||
                     word == 'won' ||
                     word == 'wan' ||
+                    word == "واحد" ||
+                    word == "احد" ||
+                    word == "واهد" ||
+                    word == "وان" ||
                     StringSimilarity.compareTwoStrings(word, "واحد") >= 0.5) {
                   number = 1;
                   break;
-                } else if (word == 'two' ||
+                } else if (word == "اثنان" ||
+                    word == "اثنين" ||
+                    word == "تو" ||
+                    word == "توو" ||
+                    word == "اتنان" ||
+                    word == "اتنين" ||
+                    word == 'two' ||
                     word == '2' ||
                     word == 'to' ||
                     word == 'too' ||
                     StringSimilarity.compareTwoStrings(word, "اثنان") >= 0.5) {
                   number = 2;
                   break;
-                } else if (word == 'three' ||
-                    StringSimilarity.compareTwoStrings(word, "ثلاثة") >= 0.5 ||
-                    word == 'tree' ||
-                    word == 'thre' ||
-                    word == '3') {
-                  number = 3;
-                  break;
                 } else if (StringSimilarity.compareTwoStrings(word, "اربعة") >=
                         0.5 ||
+                    word == "اربعة" ||
+                    word == "فور" ||
+                    word == "اربع" ||
                     word == 'four' ||
                     word == 'for' ||
                     word == '4') {
                   number = 4;
                   break;
+                } else if (word == 'three' ||
+                    word == "تلاتة" ||
+                    word == "ثلاثة" ||
+                    word == "تلات" ||
+                    word == 'tree' ||
+                    word == 'thre' ||
+                    word == '3' ||
+                    word == 'sree' ||
+                    StringSimilarity.compareTwoStrings(word, "ثلاثة") >= 0.5) {
+                  number = 3;
+                  break;
                 } else if (word == 'five' ||
                     word == 'hive' ||
                     word == '5' ||
-                    word == 'vive') {
+                    word == 'vive' ||
+                    word == "فايف" ||
+                    word == "خمسة" ||
+                    word == "خمس" ||
+                    StringSimilarity.compareTwoStrings(word, "خمسة") >= 0.5) {
                   number = 5;
                   break;
                 }

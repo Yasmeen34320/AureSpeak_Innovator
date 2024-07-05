@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'dart:math';
-
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:grd_projecttt/Screens/details_screen.dart';
@@ -39,12 +38,15 @@ class _MathGameScreenState extends State<MathGameScreen> {
         break;
       case 1:
         _operation = '-';
-        // if (_number1 < _number2) {
-        //   int temp = _number1;
-        //   _number1 = _number2;
-        //   _number2 = temp;
-        // }
+        if (widget.lang1 == 'ar') {
+          if (_number1 < _number2) {
+            int temp = _number1;
+            _number1 = _number2;
+            _number2 = temp;
+          }
+        }
         _correctAnswer = _number1 - _number2;
+
         break;
       case 2:
         _operation = '*';
@@ -68,10 +70,19 @@ class _MathGameScreenState extends State<MathGameScreen> {
 
   void _checkAnswer(int answer) {
     if (answer == _correctAnswer) {
-      _showDialog('Correct!', 'Well done! You got it right.');
+      _showDialog(
+          widget.lang1 == 'en' ? 'Correct!' : 'صحيح!',
+          widget.lang1 == 'en'
+              ? 'Well done! You got it right.'
+              : 'أحسنت! لقد أجبت بشكل صحيح.');
     } else {
-      _showDialog('Wrong! the Correct Answer is $_correctAnswer',
-          'Try again in another one');
+      _showDialog(
+          widget.lang1 == 'en'
+              ? 'Wrong! The correct answer is $_correctAnswer'
+              : 'خطأ! الإجابة الصحيحة هي $_correctAnswer',
+          widget.lang1 == 'en'
+              ? 'Try again in another one.'
+              : 'حاول مرة أخرى في سؤال آخر.');
     }
     setState(() {
       _generateQuestion();
@@ -95,7 +106,7 @@ class _MathGameScreenState extends State<MathGameScreen> {
                     MaterialStateProperty.all<Color>(Color(0xFFa8ae4f)),
               ),
               child: Text(
-                'OK',
+                widget.lang1 == 'en' ? 'OK' : 'حسنا',
                 style: TextStyle(color: Colors.white),
               ),
             ),
@@ -103,6 +114,27 @@ class _MathGameScreenState extends State<MathGameScreen> {
         );
       },
     );
+  }
+
+  String _toArabicNumber(int number) {
+    print(number);
+    final arabicNumbers = [
+      '٠',
+      '١',
+      '٢',
+      '٣',
+      '٤',
+      '٥',
+      '٦',
+      '٧',
+      '٨',
+      '٩',
+    ];
+    return number
+        .toString()
+        .split('')
+        .map((digit) => arabicNumbers[int.parse(digit)])
+        .join();
   }
 
   @override
@@ -152,159 +184,189 @@ class _MathGameScreenState extends State<MathGameScreen> {
         ),
         backgroundColor: Colors.white,
       ),
-      body: Stack(children: [
-        Lottie.asset(
-          "lib/assest/Animation/test5.json",
-          fit: BoxFit.fill,
-        ),
-        Column(
-          children: [
-            // Image.asset(
-            //   "lib/assest/1 (6).png",
-            //   fit: BoxFit.cover,
-            //   color: Color(0xFF6b5ba0),
-            // ),
-            SizedBox(
-              height: (ScreenUtil().orientation == Orientation.landscape)
-                  ? 20.h
-                  : 260.h,
-            ),
-            Center(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _buildNumberContainer('$_number1'),
-                  SizedBox(width: 10),
-                  // Color.fromARGB(255, 111, 183, 39),
-                  if (_operation == '+')
-                    Image.asset(
-                      "lib/assest/square.png",
-                      width: (ScreenUtil().orientation == Orientation.landscape)
-                          ? 30
-                          : 20,
-                      height: 30,
-                      color: Color(0xFFa8ae4f),
+      body: Stack(
+        children: [
+          Lottie.asset(
+            "lib/assest/Animation/test5.json",
+            fit: BoxFit.fill,
+          ),
+          Column(
+            children: [
+              SizedBox(
+                height: (ScreenUtil().orientation == Orientation.landscape)
+                    ? 20.h
+                    : 260.h,
+              ),
+              Center(
+                child: (widget.lang1 == 'en')
+                    ? Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          _buildNumberContainer('$_number1'),
+                          SizedBox(width: 10),
+                          Operation(
+                            operation: _operation,
+                          ),
+                          SizedBox(width: 10),
+                          _buildNumberContainer('$_number2'),
+                          SizedBox(width: 10),
+                          Image.asset(
+                            "lib/assest/equals-sign.png",
+                            width: (ScreenUtil().orientation ==
+                                    Orientation.landscape)
+                                ? 30
+                                : 25,
+                            height: 30,
+                            color: Color(0xFFa8ae4f),
+                          ),
+                          SizedBox(width: 10),
+                          _buildNumberContainer('?'),
+                        ],
+                      )
+                    : Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          _buildNumberContainer('؟'),
+                          SizedBox(width: 10),
+                          Image.asset(
+                            "lib/assest/equals-sign.png",
+                            width: (ScreenUtil().orientation ==
+                                    Orientation.landscape)
+                                ? 30
+                                : 25,
+                            height: 30,
+                            color: Color(0xFFa8ae4f),
+                          ),
+                          SizedBox(width: 10),
+                          _buildNumberContainer(_toArabicNumber(_number2)),
+                          SizedBox(width: 10),
+                          Operation(
+                            operation: _operation,
+                          ),
+                          SizedBox(width: 10),
+                          _buildNumberContainer(_toArabicNumber(_number1)),
+                        ],
+                      ),
+              ),
+              SizedBox(height: 20),
+              (ScreenUtil().orientation == Orientation.landscape)
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: _options.map((option) {
+                        return InkWell(
+                          onTap: () {
+                            _checkAnswer(option);
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Container(
+                              width: (ScreenUtil().orientation ==
+                                      Orientation.landscape)
+                                  ? 60.w
+                                  : 60.w,
+                              height: 60.h,
+                              decoration: BoxDecoration(
+                                color: Color(0xFFa8ae4f),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Center(
+                                child: Text(
+                                  widget.lang1 == 'en'
+                                      ? '$option'
+                                      : _toArabicNumber(option),
+                                  style: TextStyle(
+                                      fontSize: 12.sp,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w400),
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      }).toList(),
                     )
-                  else if (_operation == '-')
-                    Image.asset(
-                      "lib/assest/minus.png",
-                      width: (ScreenUtil().orientation == Orientation.landscape)
-                          ? 30
-                          : 20,
-                      height: 30,
-                      color: Color(0xFFa8ae4f),
-                    )
-                  else if (_operation == '*')
-                    Image.asset(
-                      "lib/assest/multiplication.png",
-                      width: (ScreenUtil().orientation == Orientation.landscape)
-                          ? 30
-                          : 20,
-                      height: 30,
-                      color: Color(0xFFa8ae4f),
-                    )
-                  else
-                    Image.asset(
-                      "lib/assest/division.png",
-                      width: (ScreenUtil().orientation == Orientation.landscape)
-                          ? 30
-                          : 20,
-                      height: 30,
-                      color: Color(0xFFa8ae4f),
+                  : Column(
+                      children: _options.map((option) {
+                        return InkWell(
+                          onTap: () {
+                            _checkAnswer(option);
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Container(
+                              width: (ScreenUtil().orientation ==
+                                      Orientation.landscape)
+                                  ? 60.w
+                                  : 60.w,
+                              height: 60.h,
+                              decoration: BoxDecoration(
+                                color: Color(0xFFa8ae4f),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Center(
+                                child: Text(
+                                  widget.lang1 == 'en'
+                                      ? '$option'
+                                      : _toArabicNumber(option),
+                                  style: TextStyle(
+                                      fontSize: 22.sp,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w400),
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      }).toList(),
                     ),
-                  // Text(
-                  //   _operation,
-                  //   style: TextStyle(fontSize: 32),
-                  // ),
-                  SizedBox(width: 10),
-                  _buildNumberContainer('$_number2'),
-                  SizedBox(width: 10),
-                  Image.asset(
-                    "lib/assest/equals-sign.png",
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class Operation extends StatelessWidget {
+  final String? operation;
+  const Operation({super.key, required this.operation});
+
+  @override
+  Widget build(BuildContext context) {
+    return (operation == '+')
+        ? Image.asset(
+            "lib/assest/square.png",
+            width:
+                (ScreenUtil().orientation == Orientation.landscape) ? 30 : 20,
+            height: 30,
+            color: Color(0xFFa8ae4f),
+          )
+        : (operation == '-')
+            ? Image.asset(
+                "lib/assest/minus.png",
+                width: (ScreenUtil().orientation == Orientation.landscape)
+                    ? 30
+                    : 20,
+                height: 30,
+                color: Color(0xFFa8ae4f),
+              )
+            : (operation == '*')
+                ? Image.asset(
+                    "lib/assest/multiplication.png",
                     width: (ScreenUtil().orientation == Orientation.landscape)
                         ? 30
-                        : 25,
+                        : 20,
                     height: 30,
                     color: Color(0xFFa8ae4f),
-                  ),
-                  SizedBox(width: 10),
-                  _buildNumberContainer('?'),
-                ],
-              ),
-            ),
-            SizedBox(height: 20),
-            (ScreenUtil().orientation == Orientation.landscape)
-                ? Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: _options.map((option) {
-                      return InkWell(
-                        onTap: () {
-                          _checkAnswer(option);
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Container(
-                            width: (ScreenUtil().orientation ==
-                                    Orientation.landscape)
-                                ? 60.w
-                                : 60.w,
-                            height: 60.h,
-                            decoration: BoxDecoration(
-                              color: Color(
-                                  0xFFa8ae4f), // Customize the color as needed
-                              shape: BoxShape.circle,
-                            ),
-                            child: Center(
-                              child: Text(
-                                '$option',
-                                style: TextStyle(
-                                    fontSize: 12.sp,
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w400),
-                              ),
-                            ),
-                          ),
-                        ),
-                      );
-                    }).toList(),
                   )
-                : Column(
-                    children: _options.map((option) {
-                      return InkWell(
-                        onTap: () {
-                          _checkAnswer(option);
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Container(
-                            width: (ScreenUtil().orientation ==
-                                    Orientation.landscape)
-                                ? 60.w
-                                : 60.w,
-                            height: 60.h,
-                            decoration: BoxDecoration(
-                              color: Color(
-                                  0xFFa8ae4f), // Customize the color as needed
-                              shape: BoxShape.circle,
-                            ),
-                            child: Center(
-                              child: Text(
-                                '$option',
-                                style: TextStyle(
-                                    fontSize: 22.sp,
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w400),
-                              ),
-                            ),
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                  ),
-          ],
-        ),
-      ]),
-    );
+                : Image.asset(
+                    "lib/assest/division.png",
+                    width: (ScreenUtil().orientation == Orientation.landscape)
+                        ? 30
+                        : 20,
+                    height: 30,
+                    color: Color(0xFFa8ae4f),
+                  );
   }
 }
 
@@ -313,7 +375,7 @@ Widget _buildNumberContainer(String number) {
     width: (ScreenUtil().orientation == Orientation.landscape) ? 40.w : 60.w,
     height: (ScreenUtil().orientation == Orientation.landscape) ? 60.h : 60.h,
     decoration: BoxDecoration(
-      color: Color.fromARGB(255, 147, 75, 4), // Customize the color as needed
+      color: Color.fromARGB(255, 147, 75, 4),
       shape: BoxShape.rectangle,
     ),
     child: Center(

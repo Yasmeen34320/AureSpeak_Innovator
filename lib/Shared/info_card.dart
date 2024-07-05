@@ -6,8 +6,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 Widget info_card(String title, String info) {
   return Expanded(
     child: Container(
-      margin: EdgeInsets.all(26.0),
-      padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 26.0),
+      margin: EdgeInsets.all(22.sp),
+      padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 22.0),
       decoration: BoxDecoration(
         color: Color(0xFFE55870),
       ),

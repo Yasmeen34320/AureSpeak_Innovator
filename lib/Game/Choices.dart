@@ -31,6 +31,7 @@ class _ChoicesScreenState extends State<ChoicesScreen>
   void initState() {
     questions.shuffle();
     super.initState();
+    questionsar.shuffle();
 
     WidgetsBinding.instance.addObserver(this);
     AutoOrientation.landscapeAutoMode(); // Set the screen to landscape mode
@@ -164,6 +165,119 @@ class _ChoicesScreenState extends State<ChoicesScreen>
   // Future.delayed(Duration(seconds: 2), () {
   //   _confettiController.stop();
   // });
+  var correctar = [
+    'فيل',
+    'طائرة',
+    'برتقالة',
+    'قلم',
+    'هدية',
+    'كوكب',
+    'نحلة',
+    'قط',
+    'موزة',
+    'سيارة',
+    'كرة القدم',
+    'شجرة',
+    'كتاب',
+    'سمكة',
+    'دمية',
+    'شمس',
+    'كعكة',
+    'مطرقة',
+  ];
+
+  var questionsar = [
+    {
+      'image': 'lib/assest/elephant.png',
+      'answers': ['فيل', 'زرافة', 'فراشة', 'أسد'],
+      'correct': 'فيل',
+    },
+    {
+      'image': 'lib/assest/plane.png',
+      'answers': ['سيارة', 'طائرة', 'دراجة', 'قارب'],
+      'correct': 'طائرة',
+    },
+    {
+      'image': 'lib/assest/orange.png',
+      'answers': ['تفاحة', 'برتقالة', 'رمانة', 'موزة'],
+      'correct': 'برتقالة',
+    },
+    {
+      'image': 'lib/assest/pen.png',
+      'answers': ['فرشاة', 'قلم', 'مسطرة', 'كتاب'],
+      'correct': 'قلم',
+    },
+    {
+      'image': 'lib/assest/present.png',
+      'answers': ['هدية', 'ساعة', 'كتاب', 'طاولة'],
+      'correct': 'هدية',
+    },
+    {
+      'image': 'lib/assest/planet.png',
+      'answers': ['قمر', 'كوكب', 'سفينة', 'شمس'],
+      'correct': 'كوكب',
+    },
+    {
+      'image': 'lib/assest/bee.png',
+      'answers': ['طائر', 'فراشة', 'نملة', 'نحلة'],
+      'correct': 'نحلة',
+    },
+    {
+      'image': 'lib/assest/cat.jpg',
+      'answers': ['قط', 'كلب', 'أرنب', 'فأر'],
+      'correct': 'قط',
+    },
+    {
+      'image': 'lib/assest/banana.jpg',
+      'answers': ['تفاحة', 'موز', 'كمثرى', 'برتقالة'],
+      'correct': 'موز',
+    },
+    {
+      'image': 'lib/assest/car.jpg',
+      'answers': ['سيارة', 'دراجة', 'حافلة', 'شاحنة'],
+      'correct': 'سيارة',
+    },
+    {
+      'image': 'lib/assest/football.jpg',
+      'answers': ['كرة القدم', 'تنس', 'غولف', 'بيسبول'],
+      'correct': 'كرة القدم',
+    },
+    {
+      'image': 'lib/assest/tree.jpg',
+      'answers': ['وردة', 'نبات', 'شجرة', 'عشب'],
+      'correct': 'شجرة',
+    },
+    {
+      'image': 'lib/assest/book.jpg',
+      'answers': ['مجلة', 'كتب', 'صحيفة', 'دفتر'],
+      'correct': 'كتب',
+    },
+    {
+      'image': 'lib/assest/fish.jpg',
+      'answers': ['سلحفاة', 'دلفين', 'حوت', 'سمكة'],
+      'correct': 'سمكة',
+    },
+    {
+      'image': 'lib/assest/doll.jpg',
+      'answers': ['سيارة', 'روبوت', 'دمية', 'دب'],
+      'correct': 'دمية',
+    },
+    {
+      'image': 'lib/assest/sun.jpg',
+      'answers': ['شمس', 'قمر', 'نجمة', 'كوكب'],
+      'correct': 'شمس',
+    },
+    {
+      'image': 'lib/assest/cake.jpg',
+      'answers': ['كعكة', 'بسكويت', 'معجنات', 'شيكولاتة'],
+      'correct': 'كعكة',
+    },
+    {
+      'image': 'lib/assest/hammer.jpg',
+      'answers': ['مفك', 'مطرقة', 'عصا', 'كعكة'],
+      'correct': 'مطرقة',
+    },
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -178,11 +292,13 @@ class _ChoicesScreenState extends State<ChoicesScreen>
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   Text(
-                    'Score:$score',
+                    widget.lang1 == 'en' ? 'Score:$score' : 'النتيجة $score',
                     style: TextStyle(fontWeight: FontWeight.w700, fontSize: 24),
                   ),
                   Text(
-                    'Choose The Correct Answer',
+                    widget.lang1 == 'en'
+                        ? 'Choose The Correct Answer'
+                        : 'قم بإختيار الإجابة الصحيحة',
                     style: TextStyle(fontSize: 36, fontWeight: FontWeight.w300),
                   ),
                   GestureDetector(
@@ -200,7 +316,9 @@ class _ChoicesScreenState extends State<ChoicesScreen>
                 children: [
                   CircleAvatar(
                     child: Image(
-                        image: AssetImage(questions[index]['image'] as String)),
+                        image: AssetImage((widget.lang1 == 'en'
+                            ? questions[index]['image']
+                            : questionsar[index]['image']) as String)),
                     radius: 110,
                     backgroundColor: Colors.white,
                   ),
@@ -210,11 +328,16 @@ class _ChoicesScreenState extends State<ChoicesScreen>
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  ...(questions[index]['answers'] as List<String>)
+                  ...(((widget.lang1 == 'en')
+                          ? questions[index]['answers']!
+                          : questionsar[index]['answers']!) as List<String>)
                       .map((answer) {
                     return ElevatedButton(
                       onPressed: () {
-                        if (answer == questions[index]['correct']) {
+                        if (answer ==
+                            ((widget.lang1 == 'en')
+                                ? questions[index]['correct']!
+                                : questionsar[index]['correct']!)) {
                           // player.play('win.mp3');
                           // Alert(
                           //   context: context,
@@ -222,21 +345,30 @@ class _ChoicesScreenState extends State<ChoicesScreen>
                           //   desc: "You have moved to the next level.",
                           // ).show();
                           print('correct');
-                          _speak('Correct');
+                          if (widget.lang1 == 'en')
+                            _speak('Correct');
+                          else
+                            _speak('صحيح');
                           setState(() {
                             print('$index ${correct.length}');
                             if (index < correct.length - 1)
                               index++;
                             else {
-                              _speak('Well Done finishing the test');
+                              if (widget.lang1 == 'en')
+                                _speak('Well Done finishing the test');
+                              else
+                                _speak('لقد احسنت بإجتياز الاختبار');
+
                               Navigator.of(context).pop();
                             }
 
                             score += 10;
                           });
                         } else {
-                          _speak('Try again!');
-
+                          if (widget.lang1 == 'en')
+                            _speak('Try again!');
+                          else
+                            _speak('حاول مرة أخرى ');
                           // player.play('fail.mp3');
                         }
                       },

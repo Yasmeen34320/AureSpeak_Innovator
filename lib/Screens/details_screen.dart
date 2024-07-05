@@ -26,7 +26,6 @@ import 'package:speech_to_text/speech_to_text.dart' as stt;
 class DetailsScreen extends StatefulWidget {
   bool? lang1;
   DetailsScreen({super.key, required this.lang1});
-
   @override
   State<DetailsScreen> createState() => _DetailsScreenState();
 }
@@ -52,8 +51,8 @@ Map<String, Map<dynamic, dynamic>> localizedStrings = {
   },
   'ar': {
     'title': {
-      0: 'التعرف علي اللون',
-      1: ' استخراج النص من الصورة',
+      0: 'التعرف على اللون',
+      1: ' استخراج النص',
       2: 'وصف الصورة ',
       3: 'الألعاب',
     },
@@ -63,7 +62,7 @@ Map<String, Map<dynamic, dynamic>> localizedStrings = {
     'options': {
       0: 'عمليات حسابية',
       1: 'توافق الالوان',
-      2: 'توافق الذاكرة',
+      2: 'اختبار الذاكرة',
       3: 'لعبة الاختيارات'
     },
   },
@@ -103,6 +102,7 @@ Map<String, Map<dynamic, dynamic>> localizedStrings = {
 //   }
 // }
 bool voice = true;
+Color color12 = Color(0xFF6b5ba0);
 
 class _DetailsScreenState extends State<DetailsScreen> {
   final stt.SpeechToText _speech = stt.SpeechToText();
@@ -343,7 +343,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                   child: (voice
                       ? Icon(
                           Icons.record_voice_over,
-                          color: Color(0xFF6b5ba0),
+                          color: color12, // Color(0xFF6b5ba0),
                           weight: 0.8,
                           size: (ScreenUtil().orientation ==
                                   Orientation.landscape)
@@ -352,7 +352,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                         )
                       : Icon(
                           Icons.voice_over_off,
-                          color: Color(0xFF6b5ba0),
+                          color: color12, //Color(0xFF6b5ba0),
                           weight: 0.8,
                           size: (ScreenUtil().orientation ==
                                   Orientation.landscape)
@@ -392,11 +392,11 @@ class _DetailsScreenState extends State<DetailsScreen> {
               Image.asset(
                 "lib/assest/1 (6).png",
                 fit: BoxFit.cover,
-                color: Color(0xFF6b5ba0),
+                color: color12, //Color(0xFF6b5ba0),
               ),
               SizedBox(
                 height: (ScreenUtil().orientation == Orientation.landscape)
-                    ? 10.h
+                    ? 5.h
                     : 12.h,
               ),
               Expanded(
@@ -409,7 +409,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                     mainAxisSpacing: ScreenUtil().screenWidth * 0.02,
                     childAspectRatio:
                         (ScreenUtil().orientation == Orientation.landscape)
-                            ? (0.9).sp
+                            ? (0.86).sp
                             : (1.3).sp,
                     children: [
                       for (var i = 0; i < 3; i++) // dataimage.length
@@ -456,8 +456,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                               // height: ScreenUtil().screenHeight * 0.1,
                               // height: screenSize.height * 0.4,
                               decoration: BoxDecoration(
-                                border: Border.all(
-                                    color: Color(0xFF6b5ba0), width: 1.0),
+                                border: Border.all(color: color12, width: 1.0),
                                 color: Color.fromARGB(255, 250, 242, 237),
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(12)),
@@ -524,8 +523,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                             // height: ScreenUtil().screenHeight * 0.1,
                             // height: screenSize.height * 0.4,
                             decoration: BoxDecoration(
-                              border: Border.all(
-                                  color: Color(0xFF6b5ba0), width: 1.0),
+                              border: Border.all(color: color12, width: 1.0),
                               color: Color.fromARGB(255, 250, 242, 237),
                               borderRadius:
                                   BorderRadius.all(Radius.circular(12)),

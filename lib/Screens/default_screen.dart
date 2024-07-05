@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_langdetect/language.dart';
+import 'package:flutter_langdetect/flutter_langdetect.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:grd_projecttt/Cubits/default_cubit/default_cubit.dart';
@@ -11,6 +11,9 @@ import 'package:grd_projecttt/Screens/details_screen.dart';
 import 'package:grd_projecttt/Shared/initial_state.dart';
 import 'package:grd_projecttt/Shared/second_initial.dart';
 import 'dart:io';
+import 'package:flutter_langdetect/flutter_langdetect.dart';
+import 'package:google_mlkit_language_id/google_mlkit_language_id.dart';
+
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:flutter_langdetect/flutter_langdetect.dart' as langdetect;
 import 'package:image_picker/image_picker.dart';
@@ -23,7 +26,6 @@ String? data = null;
 
 FlutterTts flutterTts = FlutterTts();
 String textToSpeak = "";
-String? text_language = null;
 
 class DefaultScreen extends StatefulWidget {
   final bool? lang;
@@ -120,8 +122,7 @@ class _DefaultScreenState extends State<DefaultScreen> {
           });
         else if (state is DefaultSuccessState) {
           data = state.data;
-          if (widget.title['en'] == 'Text Extraction')
-            text_language = state.lang;
+
           _speakOptions({
             'en':
                 'successfully predict the photo please select  6 for the speech  ',
@@ -143,63 +144,11 @@ class _DefaultScreenState extends State<DefaultScreen> {
               ),
             ),
             backgroundColor: Colors.white,
-            actions: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: InkWell(
-                    onTap: () async {
-                      print(voice);
-                      if (voice) {
-                        await flutterTts.stop();
-                        flutterTts.setVolume(0);
-                        voice = false;
-                        setState(() {});
-                      } else {
-                        voice = true;
-                        flutterTts.setVolume(1);
-                        setState(() {});
-                      }
-                      // Set volume to 0 to mute the voice
-                    },
-                    child: (voice
-                        ? Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Icon(
-                              Icons.record_voice_over,
-                              color: Color(0xFF6b5ba0),
-                              weight: 0.8,
-                              size: (ScreenUtil().orientation ==
-                                      Orientation.landscape)
-                                  ? 18.sp
-                                  : 28.sp,
-                            ),
-                          )
-                        : Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Icon(
-                              Icons.voice_over_off,
-                              color: Color(0xFF6b5ba0),
-                              weight: 0.8,
-                              size: (ScreenUtil().orientation ==
-                                      Orientation.landscape)
-                                  ? 18.sp
-                                  : 28.sp,
-                            ),
-                          ))
-                    //  Lottie.asset(
-                    //   'lib/assest/Animation/stop4.json',
-                    //   width: 200,
-                    //   height: 200,
-                    //   repeat: true,
-                    // ),
-                    ),
-              ),
-            ],
             leading: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Container(
                 decoration: BoxDecoration(
-                  color: Color(0xFF6b5ba0), // Color(0xFF5164BF),
+                  color: color12, // Color(0xFF6b5ba0), // Color(0xFF5164BF),
                   borderRadius: BorderRadius.circular(13.r),
                 ),
                 child: IconButton(
@@ -241,7 +190,7 @@ class _DefaultScreenState extends State<DefaultScreen> {
                 Image.asset(
                   "lib/assest/1 (6).png",
                   fit: BoxFit.cover,
-                  color: Color(0xFF6b5ba0),
+                  color: color12, // Color(0xFF6b5ba0),
                 ),
                 // SizedBox(
                 //   height: 18.h,
@@ -444,10 +393,13 @@ class _DefaultScreenState extends State<DefaultScreen> {
 }
 
 Future<void> speakText() async {
-  if (text_language == 'ar')
-    await flutterTts.setLanguage('ar-AR');
-  else
+  final _languageIdentifier = LanguageIdentifier(confidenceThreshold: 0.5);
+
+  final detectedLang = await _languageIdentifier.identifyLanguage(data!);
+  if (detectedLang == 'en')
     await flutterTts.setLanguage('en-US');
+  else
+    await flutterTts.setLanguage('ar-AR');
 
   await flutterTts.setSpeechRate(0.25);
   await flutterTts.setPitch(1.0); // Set the pitch (adjust as needed)

@@ -46,10 +46,17 @@ class _MemoryGameScreenState extends State<MemoryGameScreen> {
   Future<void> playCorrectSound() async {
     // Play a correct sound effect and speak "Correct" using TTS
     try {
-      await flutterTts.setLanguage('en-US');
-      await flutterTts.setSpeechRate(0.25);
-      await flutterTts.setVolume(1.0); // Max volume
-      await flutterTts.speak('Correct');
+      if (widget.lang1 == 'en') {
+        await flutterTts.setLanguage('en-US');
+        await flutterTts.setSpeechRate(0.25);
+        await flutterTts.setVolume(1.0); // Max volume
+        await flutterTts.speak('Correct');
+      } else {
+        await flutterTts.setLanguage('ar-AR');
+        await flutterTts.setSpeechRate(0.25);
+        await flutterTts.setVolume(1.0); // Max volume
+        await flutterTts.speak('صحيح');
+      }
     } catch (e) {
       print("Failed to speak: $e");
     }
@@ -134,8 +141,9 @@ class _MemoryGameScreenState extends State<MemoryGameScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                info_card("Tries", "$tries"),
-                info_card("Score", "$score"),
+                info_card(
+                    widget.lang1 == 'en' ? "Tries" : "المحاولات", "$tries"),
+                info_card(widget.lang1 == 'en' ? "Score" : "النتيجة", "$score"),
               ],
             ),
             SizedBox(
@@ -172,11 +180,19 @@ class _MemoryGameScreenState extends State<MemoryGameScreen> {
                             setState(() async {
                               score += 100;
                               if (score == 400) {
-                                await flutterTts.setLanguage('en-US');
-                                await flutterTts.setSpeechRate(0.25);
-                                await flutterTts.setVolume(1.0); // Max volume
-                                await flutterTts.speak(
-                                    'Well Done , you can play new game by reset');
+                                if (widget.lang1 == 'en') {
+                                  await flutterTts.setLanguage('en-US');
+                                  await flutterTts.setSpeechRate(0.25);
+                                  await flutterTts.setVolume(1.0); // Max volume
+                                  await flutterTts.speak(
+                                      'Well Done , you can play new game by reset');
+                                } else {
+                                  await flutterTts.setLanguage('ar-AR');
+                                  await flutterTts.setSpeechRate(0.25);
+                                  await flutterTts.setVolume(1.0); // Max volume
+                                  await flutterTts.speak(
+                                      'احسنت .. يمكنك اللعب مرة أخرى بالضغط على زر الإعادة');
+                                }
                               }
                               _game.matchCheck.clear();
                             });
@@ -225,12 +241,12 @@ class _MemoryGameScreenState extends State<MemoryGameScreen> {
               children: [
                 ElevatedButton(
                   onPressed: startNewGame,
-                  child: Text("Reset"),
+                  child: Text(widget.lang1 == 'en' ? "Reset" : 'إعادة'),
                 ),
                 SizedBox(width: 16.0),
                 ElevatedButton(
                   onPressed: navigateToPreviousScreen,
-                  child: Text("Leave"),
+                  child: Text(widget.lang1 == 'en' ? "Leave" : 'خروج'),
                 ),
               ],
             ),

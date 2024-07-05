@@ -53,6 +53,7 @@ dependencies:
   speech_to_text: ^6.6.1
   string_similarity: ^2.0.0
   flutter_native_splash: ^2.4.0
+  google_mlkit_language_id: ^0.11.0
 
 dev_dependencies:
 
@@ -147,11 +148,10 @@ flutter_native_splash:
 
   # The image parameter allows you to specify an image used in the splash screen.  It must be a
   # png file and should be sized for 4x pixel density.
-  image: lib/assest/te_logo1.png
+  image: lib/assest/te_logo.png
   android: true
   ios: true
   web: false
-  branding: lib/assest/logo.png
   # Control image size and position
   android_gravity: center
   ios_content_mode: center
@@ -188,14 +188,13 @@ flutter_native_splash:
     # 640 pixels in diameter.
     # App icon without an icon background: This should be 1152×1152 pixels, and fit within a circle
     # 768 pixels in diameter.
-    image: lib/assest/te_logo1.png #te_logo
+    image: lib/assest/te_logo.png #te_logo
 
     # Splash screen background color.
     color: "#ffffff"
     android: true
     ios: true
     web: false
-    branding: lib/assest/logo.png
     # Control image size and position
     android_gravity: center
     ios_content_mode: center

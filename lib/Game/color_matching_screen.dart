@@ -55,25 +55,65 @@ class _ColorMatchingScreenState extends State<ColorMatchingScreen> {
     'Salmon': Color(0xFFFA8072),
     'Aqua': Color(0xFF00FFFF),
   };
+  Map<String, Color> colorMapar = {
+    'أحمر': Colors.red,
+    'أخضر': Colors.green,
+    'أزرق': Colors.blue,
+    'أصفر': Colors.yellow,
+    'أرجواني': Colors.purple,
+    'برتقالي': Colors.orange,
+    'وردي': Colors.pink,
+    'سماوي': Colors.cyan,
+    'تركواز': Color(0xFF40E0D0),
+    'ذهبي': Color(0xFFFFD700),
+    'فضي': Color(0xFFC0C0C0),
+    'زيتوني': Color(0xFF808000),
+    'كستنائي': Color(0xFF800000),
+    'كحلي': Color(0xFF000080),
+    'خوخي': Color(0xFFDDA0DD),
+    'سلمون': Color(0xFFFA8072),
+    'مائي': Color(0xFF00FFFF),
+    'بني': Colors.brown,
+    'تركواز': Colors.teal,
+    'ليموني': Colors.lime,
+    'نيلي': Colors.indigo,
+    'عنبر': Colors.amber,
+    'رمادي': Colors.grey,
+    'أسود': Colors.black,
+  };
 
   Set<String> correctMatches = Set<String>();
-  List<String> colorsList = [], colorsList1 = [], colors = [];
+  List<String> colorsList = [], colorsList1 = [], colorsList2 = [], colors = [];
 
   @override
   void initState() {
     super.initState();
+    if (widget.lang1 == 'en') {
+      colorsList1 = colorMap.keys.toList();
+      colorsList1.shuffle(Random());
 
-    colorsList1 = colorMap.keys.toList();
-    colorsList1.shuffle(Random());
+      colorsList = colorsList1.take(8).toList();
+      colors = colorsList1.take(8).toList();
+      index1 = random.nextInt(colorsList.length);
+      color = colorMap[colorsList[index1]]!;
+    } else {
+      colorsList1 = colorMapar.keys.toList();
+      colorsList1.shuffle(Random());
 
-    colorsList = colorsList1.take(8).toList();
-    colors = colorsList1.take(8).toList();
-    index1 = random.nextInt(colorsList.length);
-    color = colorMap[colorsList[index1]]!;
+      colorsList = colorsList1.take(8).toList();
+      colors = colorsList1.take(8).toList();
+      index1 = random.nextInt(colorsList.length);
+      color = colorMapar[colorsList[index1]]!;
+    }
+    ////////////////////
   }
 
   void _speak(String text) async {
-    await flutterTts.setLanguage('en-US');
+    if (widget.lang1 == 'en')
+      await flutterTts.setLanguage('en-US');
+    else
+      await flutterTts.setLanguage('ar-AR');
+
     await flutterTts.setSpeechRate(0.25);
     await flutterTts.setVolume(1.0); // Max volume
     await flutterTts.speak(text);
@@ -86,7 +126,11 @@ class _ColorMatchingScreenState extends State<ColorMatchingScreen> {
 
   void checkAllColorsMatched() {
     if (colorsList.length == 0) {
-      _speak('Well Done finishing the test');
+      if (widget.lang1 == 'en')
+        _speak('Well Done finishing the test');
+      else
+        _speak('لقد احسنت بإجتياز الاختبار');
+
       Navigator.pop(context);
     }
   }
@@ -149,10 +193,18 @@ class _ColorMatchingScreenState extends State<ColorMatchingScreen> {
               runSpacing: 20,
               children: colorsList.map((colorName) {
                 return Draggable<Color>(
-                  data: colorMap[colorName]!,
-                  child: ColorCircle(color: colorMap[colorName]!),
+                  data: (widget.lang1 == 'en')
+                      ? colorMap[colorName]!
+                      : colorMapar[colorName],
+                  child: ColorCircle(
+                      color: (widget.lang1 == 'en')
+                          ? colorMap[colorName]!
+                          : colorMapar[colorName]!),
                   feedback: ColorCircle(
-                      color: colorMap[colorName]!, isDragging: true),
+                      color: (widget.lang1 == 'en')
+                          ? colorMap[colorName]!
+                          : colorMapar[colorName]!,
+                      isDragging: true),
                   childWhenDragging: ColorCircle(color: Colors.grey),
                 );
               }).toList(),
@@ -171,7 +223,11 @@ class _ColorMatchingScreenState extends State<ColorMatchingScreen> {
                       width: 110,
                       height: 50,
                       decoration: BoxDecoration(
-                        color: isCorrect ? colorMap[colorName] : Colors.white,
+                        color: isCorrect
+                            ? ((widget.lang1 == 'en')
+                                ? colorMap[colorName]!
+                                : colorMapar[colorName])
+                            : Colors.white,
                         border: Border.all(color: Colors.black, width: 2),
                         borderRadius: BorderRadius.circular(10),
                         boxShadow: [
@@ -196,13 +252,23 @@ class _ColorMatchingScreenState extends State<ColorMatchingScreen> {
                   },
                   onAccept: (receivedColor) {
                     setState(() {
-                      if (receivedColor == colorMap[colorName]) {
-                        _speak('Correct! ${colorName}');
+                      if (receivedColor ==
+                          ((widget.lang1 == 'en')
+                              ? colorMap[colorName]!
+                              : colorMapar[colorName])) {
+                        if (widget.lang1 == 'en')
+                          _speak('Correct! ${colorName}');
+                        else
+                          _speak(' صحيح إنه ${colorName}');
+
                         correctMatches.add(colorName);
                         colorsList.remove(colorName);
                         checkAllColorsMatched();
                       } else {
-                        _speak('Try again!');
+                        if (widget.lang1 == 'en')
+                          _speak('Try again!');
+                        else
+                          _speak('!حاول مرة أخرى');
                       }
                     });
                   },

@@ -328,14 +328,28 @@ class _DetailsScreenState extends State<DetailsScreen> {
               leading: InkWell(
                   onTap: () async {
                     print(voice);
+
                     if (voice) {
                       await flutterTts.stop();
+                      await _speakOptions({
+                        'ar':
+                            ' لقد تم كتم الصوت ,إِذَا كُنْتَ تُرِيدُ عدم فعل ذلك  مِنْ فَضْلِكَ قُمْ بِالضَّغْطِ عَلَى الزَّر فِي أَعْلَى الشَّاشَةِ عَلَى اليسار',
+                        'en':
+                            "You muted the sound, if you want to change this , please press the button that is located in the left top of the screen"
+                      }, widget.lang1);
                       flutterTts.setVolume(0);
                       voice = false;
                       setState(() {});
                     } else {
                       voice = true;
                       flutterTts.setVolume(1);
+
+                      await _speakOptions({
+                        'ar':
+                            ' لقد تم تشغيل الصوت ,إِذَا كُنْتَ تُرِيدُ عدم فعل ذلك  مِنْ فَضْلِكَ قُمْ بِالضَّغْطِ عَلَى الزَّر فِي أَعْلَى الشَّاشَةِ عَلَى اليسار',
+                        'en':
+                            "You turn on the sound, if you want to change this , please press the button that is located in the left top of the screen"
+                      }, widget.lang1);
                       setState(() {});
                     }
                     // Set volume to 0 to mute the voice

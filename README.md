@@ -1,16 +1,15 @@
-# grd_projecttt
+# AuraSpeak Innovator 
+AuraSpeak Innovator is a transformative tool for the visually impaired, converting visual information into auditory output and providing educational support. It employs ML models for object recognition, text extraction, and engaging games to enhance learning and cognitive skills.
+     
 
-A new Flutter project.
+## Screens 
 
-## Getting Started
+### Cateogries of the application  
+![Untitled design (9)](https://github.com/user-attachments/assets/7b2899e4-b456-4a5c-a460-860ef4e5c767)
 
-This project is a starting point for a Flutter application.
+### test the main models 
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+![Untitled design (10)](https://github.com/user-attachments/assets/3b329357-3fbe-4448-99e2-33daba5643df)
+### Games screens 
+![Untitled design (11)](https://github.com/user-attachments/assets/4c01901f-3fcc-4fd0-b1af-c4d7d2b62ad9)
+![Untitled design (12)](https://github.com/user-attachments/assets/41247e2a-3529-4640-86ae-905b19cc9c6d)
